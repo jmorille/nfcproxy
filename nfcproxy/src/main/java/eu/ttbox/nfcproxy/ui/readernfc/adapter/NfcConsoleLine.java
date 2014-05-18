@@ -7,4 +7,10 @@ public class NfcConsoleLine {
 
     public String value;
 
+    public NfcConsoleLine(String key, String value) {
+        this.key = key;
+        this.value = value;
+    }
+
+
 }

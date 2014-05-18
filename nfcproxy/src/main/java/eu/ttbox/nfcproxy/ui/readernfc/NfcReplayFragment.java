@@ -3,10 +3,14 @@ package eu.ttbox.nfcproxy.ui.readernfc;
 import android.app.Activity;
 import android.os.Bundle;
 import android.app.ListFragment;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ListView;
 
+import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
+import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
 
 /**
  * A fragment representing a list of Items.
@@ -15,7 +19,7 @@ import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class NfcReaderFragment extends ListFragment {
+public class NfcReplayFragment extends ListFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -35,8 +39,8 @@ public class NfcReaderFragment extends ListFragment {
     // ===========================================================
 
     // TODO: Rename and change types of parameters
-    public static NfcReaderFragment newInstance(String param1, String param2) {
-        NfcReaderFragment fragment = new NfcReaderFragment();
+    public static NfcReplayFragment newInstance(String param1, String param2) {
+        NfcReplayFragment fragment = new NfcReplayFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -54,7 +58,7 @@ public class NfcReaderFragment extends ListFragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public NfcReaderFragment() {
+    public NfcReplayFragment() {
         super();
     }
 
@@ -71,8 +75,23 @@ public class NfcReaderFragment extends ListFragment {
         consoleNfc = new NfcConsoleArrayAdapter(getActivity());
 // new ArrayAdapter<DummyContent.DummyItem>(getActivity(),  android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS)
         // TODO: Change Adapter to display your content
-        setListAdapter(consoleNfc);
+        setListAdapter(consoleNfc);//  View v = inflater.inflate(R.layout.fragment_cardreader, container, false);
     }
+
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View v = inflater.inflate(R.layout.fragment_nfc_proxy, container, false);
+
+        consoleNfc.add(new NfcConsoleLine("Send Replay" , "00 A4 00 00"));
+
+        return v;
+    }
+
+
+
 
     // ===========================================================
     // Life Cycle
@@ -83,7 +102,7 @@ public class NfcReaderFragment extends ListFragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (OnFragmentInteractionListener) activity;
+          //TODO  mListener = (OnFragmentInteractionListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString()
                 + " must implement OnFragmentInteractionListener");

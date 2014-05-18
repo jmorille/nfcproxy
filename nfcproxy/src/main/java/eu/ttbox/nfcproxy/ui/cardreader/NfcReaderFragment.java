@@ -1,13 +1,13 @@
 package eu.ttbox.nfcproxy.ui.cardreader;
 
 import android.app.Activity;
+import android.app.ListFragment;
 import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,12 +15,16 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import eu.ttbox.nfcproxy.R;
+import eu.ttbox.nfcproxy.service.nfc.NfcConsoleCallback;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
+import eu.ttbox.nfcproxy.service.nfc.reader.EmvCardReader;
 import eu.ttbox.nfcproxy.service.nfc.reader.LoyaltyCardReader;
+import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
+import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
 
 
-public class CardReaderFragment extends Fragment implements LoyaltyCardReader.AccountCallback {
+public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader.AccountCallback, NfcConsoleCallback {
 
     public static final String TAG = "CardReaderFragment";
 
@@ -38,8 +42,9 @@ public class CardReaderFragment extends Fragment implements LoyaltyCardReader.Ac
     public NfcReaderCallback mLoyaltyCardReader;
 
     // Binding
-    private TextView mAccountField;
+    private TextView mStatusField;
 
+    private NfcConsoleArrayAdapter consoleNfc;
 
     // ===========================================================
     // Constructor
@@ -52,24 +57,28 @@ public class CardReaderFragment extends Fragment implements LoyaltyCardReader.Ac
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Adapter
+        consoleNfc = new NfcConsoleArrayAdapter(getActivity());
+        setListAdapter(consoleNfc);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.cardreader_fragment, container, false);
-        if (v != null) {
-            mAccountField = (TextView) v.findViewById(R.id.card_account_field);
-            mAccountField.setText("Waiting...");
+        View v = inflater.inflate(R.layout.fragment_cardreader, container, false);
 
-            mLoyaltyCardReader = new LoyaltyCardReader(this);
+        mStatusField = (TextView) v.findViewById(R.id.card_account_field);
+        mStatusField.setText("Waiting...");
 
-            //
+        mLoyaltyCardReader = new EmvCardReader(this);
 
-            // Disable Android Beam and register our card reader callback
-            //enableReaderMode();
-        }
+        //
+
+        // Disable Android Beam and register our card reader callback
+        //enableReaderMode();
+
 
         return v;
     }
@@ -159,7 +168,8 @@ public class CardReaderFragment extends Fragment implements LoyaltyCardReader.Ac
         // Nfc Receiver
         Intent intent = new Intent()
                 .setAction(NfcReaderBroadcastReceiver.ACTION_ON_NFC_RECEIVE)
-                .addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                //.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                ;
         PendingIntent nfcintent = PendingIntent.getBroadcast(activity, 0, intent, 0);
         // Enable
         nfc.enableForegroundDispatch(activity, nfcintent, null, nfctechfilter);
@@ -171,13 +181,18 @@ public class CardReaderFragment extends Fragment implements LoyaltyCardReader.Ac
     // ===========================================================
 
     @Override
+    public void onConsoleLog(String key, String value){
+        consoleNfc.add(new NfcConsoleLine(key, value));
+    }
+
+    @Override
     public void onAccountReceived(final String account) {
         // This callback is run on a background thread, but updates to UI elements must be performed
         // on the UI thread.
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mAccountField.setText(account);
+                mStatusField.setText(account);
             }
         });
     }

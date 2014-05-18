@@ -108,4 +108,9 @@ public class EmvTLVParser {
     // ===========================================================
 
 
+    public Iterable<? extends Map.Entry<RecvTag, byte[]>> entrySet() {
+        return parsed.entrySet();
+    }
+
+
 }

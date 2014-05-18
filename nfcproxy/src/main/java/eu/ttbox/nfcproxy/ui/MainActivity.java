@@ -16,10 +16,10 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import eu.ttbox.nfcproxy.R;
-import eu.ttbox.nfcproxy.ui.cardreader.CardReaderFragment;
+import eu.ttbox.nfcproxy.ui.cardreader.NfcReaderFragment;
 import eu.ttbox.nfcproxy.ui.nav.NavigationDrawerFragment;
 import eu.ttbox.nfcproxy.ui.prefs.SettingsActivity;
-import eu.ttbox.nfcproxy.ui.readernfc.NfcReaderFragment;
+import eu.ttbox.nfcproxy.ui.readernfc.NfcReplayFragment;
 
 
 public class MainActivity extends Activity
@@ -65,21 +65,20 @@ public class MainActivity extends Activity
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        switch (position) {
+        int number = position+1;
+        switch (number) {
             case 1:
                 fragmentTransaction.replace(R.id.container, PlaceholderFragment.newInstance(position + 1));
                 break;
             case 2:
-                NfcReaderFragment nfcReaderFragment = new NfcReaderFragment();
+                NfcReplayFragment nfcReaderFragment = new NfcReplayFragment();
                 fragmentTransaction.replace(R.id.container, nfcReaderFragment);
                 break;
             case 3:
-                CardReaderFragment cardReaderFragment = new CardReaderFragment();
+                NfcReaderFragment cardReaderFragment = new NfcReaderFragment();
                 fragmentTransaction.replace(R.id.container, cardReaderFragment);
                 break;
         }
-
-
 
         fragmentTransaction.commit();
     }
@@ -179,5 +178,11 @@ public class MainActivity extends Activity
                     getArguments().getInt(ARG_SECTION_NUMBER));
         }
     }
+
+
+    // ===========================================================
+    // Other
+    // ===========================================================
+
 
 }

@@ -1,7 +1,7 @@
 package eu.ttbox.nfcparser.emv.status;
 
 
-import net.skora.eccardinfos.SharedUtils;
+import eu.ttbox.nfcparser.utils.NumUtil;
 
 public class Err {
 
@@ -26,8 +26,8 @@ public class Err {
         this.type = type;
         this.desc = desc;
         // Convert byte
-        this.sw1Byte = SharedUtils.hex2Byte(sw1)[0];
-        this.sw2Byte = Errors.isSw2Data(sw2) ?  SharedUtils.hex2Byte(sw2)[0] : null;
+        this.sw1Byte = NumUtil.hex2Byte(sw1)[0];
+        this.sw2Byte = Errors.isSw2Data(sw2) ?  NumUtil.hex2Byte(sw2)[0] : null;
 
     }
 

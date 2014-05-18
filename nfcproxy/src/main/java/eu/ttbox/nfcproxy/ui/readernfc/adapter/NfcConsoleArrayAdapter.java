@@ -2,14 +2,11 @@ package eu.ttbox.nfcproxy.ui.readernfc.adapter;
 
 
 import android.content.Context;
-import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
-import java.util.List;
 
 import eu.ttbox.nfcproxy.R;
 
@@ -30,7 +27,7 @@ public class NfcConsoleArrayAdapter extends ArrayAdapter<NfcConsoleLine> {
 
 
     public NfcConsoleArrayAdapter(Context context) {
-        this(context, R.layout.nfccoonsole_adpator);
+        this(context, R.layout.adaptor_nfc_console_item);
     }
 
     public NfcConsoleArrayAdapter(Context context, int layout) {
