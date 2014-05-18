@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import eu.ttbox.nfcparser.emv.status.Err;
+import eu.ttbox.nfcparser.emv.status.Errors;
 import eu.ttbox.nfcparser.model.CardResponse;
 import eu.ttbox.nfcparser.model.StatusWord;
 import eu.ttbox.nfcparser.parser.TLVParser;
@@ -43,6 +45,7 @@ public class EmvCardReader  implements NfcReaderCallback {
 
 
 
+
     protected CardResponse transceive(IsoDep tagcomm, byte[] bytes) throws IOException {
         Log.d(TAG, "Send: " + NumUtil.byte2Hex(bytes) );
         byte[] recv = tagcomm.transceive(bytes);
@@ -50,8 +53,9 @@ public class EmvCardReader  implements NfcReaderCallback {
 
         // Log Datas
         byte[] recvData = TLVParser.getData(recv);
-        Log.d(TAG, "Received: " + AscciHelper.toAsciiByte2String(bytes) );
-
+        if (recv.length > 2) {
+            Log.d(TAG, "Received: " + AscciHelper.toAsciiByte2String(bytes));
+        }
         // Create CardResponse
         CardResponse res = new CardResponse();
         StatusWord sw = new StatusWord(recv[recv.length - 2], recv[recv.length - 1]);
@@ -64,15 +68,11 @@ public class EmvCardReader  implements NfcReaderCallback {
         ArrayList<Err> errors = Errors.getError(recv);
         if (!errors.isEmpty()) {
             for (Err err : errors) {
-                log("Received: " + SharedUtils.byte2Hex(recv) + " ==> " + err);
+                Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv) + " ==> " + err);
             }
         } else {
-            log("Received: " + SharedUtils.byte2Hex(recv));
+            Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv));
         }
-        if (recv.length > 2) {
-            log("Received: " + AscciHelper.toAsciiByte2String(TLVParser.getData(recv)));
-        }
-
 
         return res;
     }

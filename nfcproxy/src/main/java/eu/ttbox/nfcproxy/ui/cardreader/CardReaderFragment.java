@@ -7,7 +7,7 @@ import android.content.IntentFilter;
 import android.nfc.NfcAdapter;
 import android.nfc.tech.IsoDep;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,8 +65,10 @@ public class CardReaderFragment extends Fragment implements LoyaltyCardReader.Ac
 
             mLoyaltyCardReader = new LoyaltyCardReader(this);
 
+            //
+
             // Disable Android Beam and register our card reader callback
-            enableReaderMode();
+            //enableReaderMode();
         }
 
         return v;
@@ -76,7 +78,6 @@ public class CardReaderFragment extends Fragment implements LoyaltyCardReader.Ac
     // ===========================================================
     // Life Cycle
     // ===========================================================
-
 
     @Override
     public void onPause() {

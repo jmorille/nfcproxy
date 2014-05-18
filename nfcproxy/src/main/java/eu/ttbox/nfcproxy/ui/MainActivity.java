@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,8 +16,10 @@ import android.view.ViewGroup;
 import android.support.v4.widget.DrawerLayout;
 
 import eu.ttbox.nfcproxy.R;
+import eu.ttbox.nfcproxy.ui.cardreader.CardReaderFragment;
 import eu.ttbox.nfcproxy.ui.nav.NavigationDrawerFragment;
 import eu.ttbox.nfcproxy.ui.prefs.SettingsActivity;
+import eu.ttbox.nfcproxy.ui.readernfc.NfcReaderFragment;
 
 
 public class MainActivity extends Activity
@@ -60,9 +63,25 @@ public class MainActivity extends Activity
     public void onNavigationDrawerItemSelected(int position) {
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        switch (position) {
+            case 1:
+                fragmentTransaction.replace(R.id.container, PlaceholderFragment.newInstance(position + 1));
+                break;
+            case 2:
+                NfcReaderFragment nfcReaderFragment = new NfcReaderFragment();
+                fragmentTransaction.replace(R.id.container, nfcReaderFragment);
+                break;
+            case 3:
+                CardReaderFragment cardReaderFragment = new CardReaderFragment();
+                fragmentTransaction.replace(R.id.container, cardReaderFragment);
+                break;
+        }
+
+
+
+        fragmentTransaction.commit();
     }
 
     public void onSectionAttached(int number) {

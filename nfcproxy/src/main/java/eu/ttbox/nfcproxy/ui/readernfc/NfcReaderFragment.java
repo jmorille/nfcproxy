@@ -4,11 +4,9 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.app.ListFragment;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import eu.ttbox.nfcproxy.R;
 
-import eu.ttbox.nfcproxy.ui.readernfc.dummy.DummyContent;
+import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 
 /**
  * A fragment representing a list of Items.
@@ -17,7 +15,7 @@ import eu.ttbox.nfcproxy.ui.readernfc.dummy.DummyContent;
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
  */
-public class NfcReaderFragmentFragment extends ListFragment {
+public class NfcReaderFragment extends ListFragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,9 +28,15 @@ public class NfcReaderFragmentFragment extends ListFragment {
 
     private OnFragmentInteractionListener mListener;
 
+    private NfcConsoleArrayAdapter consoleNfc;
+
+    // ===========================================================
+    // Static
+    // ===========================================================
+
     // TODO: Rename and change types of parameters
-    public static NfcReaderFragmentFragment newInstance(String param1, String param2) {
-        NfcReaderFragmentFragment fragment = new NfcReaderFragmentFragment();
+    public static NfcReaderFragment newInstance(String param1, String param2) {
+        NfcReaderFragment fragment = new NfcReaderFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -40,11 +44,18 @@ public class NfcReaderFragmentFragment extends ListFragment {
         return fragment;
     }
 
+
+    // ===========================================================
+    // Constructor
+    // ===========================================================
+
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public NfcReaderFragmentFragment() {
+    public NfcReaderFragment() {
+        super();
     }
 
     @Override
@@ -56,10 +67,16 @@ public class NfcReaderFragmentFragment extends ListFragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
 
+        // Adapter
+        consoleNfc = new NfcConsoleArrayAdapter(getActivity());
+// new ArrayAdapter<DummyContent.DummyItem>(getActivity(),  android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS)
         // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
+        setListAdapter(consoleNfc);
     }
+
+    // ===========================================================
+    // Life Cycle
+    // ===========================================================
 
 
     @Override
@@ -80,6 +97,11 @@ public class NfcReaderFragmentFragment extends ListFragment {
     }
 
 
+    // ===========================================================
+    // Action
+    // ===========================================================
+
+
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
@@ -87,9 +109,15 @@ public class NfcReaderFragmentFragment extends ListFragment {
         if (null != mListener) {
             // Notify the active callbacks interface (the activity, if the
             // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
+            //DummyContent.ITEMS.get(position).id
+            mListener.onFragmentInteraction(consoleNfc.getItem(position).value);
         }
     }
+
+
+    // ===========================================================
+    // Interface
+    // ===========================================================
 
     /**
     * This interface must be implemented by activities that contain this
@@ -105,5 +133,11 @@ public class NfcReaderFragmentFragment extends ListFragment {
         // TODO: Update argument type and name
         public void onFragmentInteraction(String id);
     }
+
+
+    // ===========================================================
+    // Other
+    // ===========================================================
+
 
 }
