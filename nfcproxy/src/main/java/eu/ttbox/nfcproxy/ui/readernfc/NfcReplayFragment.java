@@ -16,7 +16,7 @@ import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
  * A fragment representing a list of Items.
  * <p />
  * <p />
- * Activities containing this fragment MUST implement the {@link Callbacks}
+ * Activities containing this fragment MUST implement the  Callbacks
  * interface.
  */
 public class NfcReplayFragment extends ListFragment {
@@ -86,7 +86,6 @@ public class NfcReplayFragment extends ListFragment {
         View v = inflater.inflate(R.layout.fragment_nfc_proxy, container, false);
 
         consoleNfc.add(new NfcConsoleLine("Send Replay" , "00 A4 00 00"));
-
         return v;
     }
 

@@ -1,0 +1,43 @@
+package eu.ttbox.nfcproxy.service.nfc.reader.emv41;
+
+
+import eu.ttbox.nfcparser.emv.Emv41Enum;
+import eu.ttbox.nfcparser.emv.parser.EmvTLVParser;
+
+public class PseDirectory {
+
+    public String dfName;
+
+    public String lang;
+
+    public int fsi;
+
+    public final EmvTLVParser parsedRecv;
+
+    public PseDirectory(EmvTLVParser parsedRecv) {
+        this.parsedRecv = parsedRecv;
+    }
+
+    public byte[] getAid() {
+        return parsedRecv.getTlvValue(Emv41Enum.DF_ADF_NAME);
+    }
+
+    public Byte getSfi() {
+        Byte sfiByte = null;
+        byte[] fciSfi = parsedRecv.getTlvValue(Emv41Enum.DF_FCI_SFI);
+        if (fciSfi != null) {
+            int sfi = fciSfi[0];
+            sfiByte = (byte) ((fsi << 3) | 4);
+        }
+        return sfiByte;
+    }
+
+    @Override
+    public String toString() {
+        return "PseDirectory{" +
+                "dfName='" + dfName + '\'' +
+                ", lang='" + lang + '\'' +
+                ", fsi=" + fsi +
+                '}';
+    }
+}

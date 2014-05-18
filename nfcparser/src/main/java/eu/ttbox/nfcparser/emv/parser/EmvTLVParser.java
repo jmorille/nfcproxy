@@ -7,6 +7,7 @@ import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.model.CardResponse;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.parser.TLVParser;
+import eu.ttbox.nfcparser.utils.NumUtil;
 
 public class EmvTLVParser {
 
@@ -85,10 +86,12 @@ public class EmvTLVParser {
             if (emv == null) {
                 // Not found add
                 result.put(key, value);
+                System.out.println("Not found type : " +key );
             } else {
+                System.out.println("Found type : " + emv);
                 switch (emv.type) {
                     case TLV: {
-                        HashMap<RecvTag, byte[]> sub = parsePayCardTVLInDept(value, key, result);
+                        HashMap<RecvTag, byte[]> sub = parsePayCardTVLInDept(value, key, null);
                         key.addAllChildKey(sub.keySet());
                         result.putAll(sub);
                     }

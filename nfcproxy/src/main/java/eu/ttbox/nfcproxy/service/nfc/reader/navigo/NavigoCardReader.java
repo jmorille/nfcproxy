@@ -1,4 +1,4 @@
-package eu.ttbox.nfcproxy.service.nfc.reader;
+package eu.ttbox.nfcproxy.service.nfc.reader.navigo;
 
 
 import android.nfc.Tag;
@@ -8,7 +8,6 @@ import android.util.Log;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
 
 import eu.ttbox.nfcparser.emv.Emv41Enum;
@@ -25,7 +24,7 @@ import eu.ttbox.nfcparser.utils.NumUtil;
 import eu.ttbox.nfcproxy.service.nfc.NfcConsoleCallback;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
 
-public class EmvCardReader  implements NfcReaderCallback {
+public class NavigoCardReader implements NfcReaderCallback {
 
     private static final String TAG = "EmvCardReader";
 
@@ -38,7 +37,7 @@ public class EmvCardReader  implements NfcReaderCallback {
     // Constructor
     // ===========================================================
 
-    public EmvCardReader(NfcConsoleCallback consoleLogCallback) {
+    public NavigoCardReader(NfcConsoleCallback consoleLogCallback) {
         this.consoleLog = new WeakReference<NfcConsoleCallback>(consoleLogCallback);
     }
 
@@ -73,7 +72,7 @@ public class EmvCardReader  implements NfcReaderCallback {
     private void onTagConnected( IsoDep isoDep) throws IOException{
          // Select Master File
         selectMasterFile(isoDep);
-        selectPseDirectory(isoDep);
+        selectPseDirectoryNavigo(isoDep);
     }
 
     private void selectMasterFile(IsoDep isoDep) throws IOException {
@@ -86,24 +85,20 @@ public class EmvCardReader  implements NfcReaderCallback {
 
 
 
-    private EmvTLVParser selectPseDirectory(IsoDep isoDep) throws IOException {
-        // http://dexterous-programmer.blogspot.fr/2012/04/emv-transaction-step-1-application.html
-        //In case the card is an NFC card then it will have PPSE (Paypass Payment System Environment) as
-        // "2PAY.SYS.DDF01" and not "1PAY.SYS.DDF01"
-        //  String fileName = "1PAY.SYS.DDF01";
-        String fileName = "2PAY.SYS.DDF01";
-        // String fileName = "1ADDF010";
-        // new ISOSelect(ISOSelect.SELECT_AID, EMV4_1.AID_1PAY_SYS_DDF01);
-
-        return selectPseDirectory(  isoDep, fileName);
+    private void selectPseDirectoryNavigo(IsoDep isoDep) throws IOException {
+        // https://github.com/pterjan/cardpeek-navigo/tree/master/dot_cardpeek_dir/scripts
+        String fileName = "1TIC.ICA";
+        selectPseDirectory(isoDep, fileName);
     }
+
+
 
     /**
      * http://www.openscdp.org/scripts/tutorial/emv/Application%20Selection.html
      *
      * @param fileName
      * @return
-     * @throws IOException
+     * @throws java.io.IOException
      */
     private EmvTLVParser selectPseDirectory(IsoDep isoDep, String fileName) throws IOException {
         // [Step 1] Select 1PAY.SYS.DDF01 to get the PSE directory
@@ -129,24 +124,6 @@ public class EmvCardReader  implements NfcReaderCallback {
         EmvTLVParser parsedRecv = new EmvTLVParser(recv);
         log(parsedRecv);
 
-        // DF Name
-//        byte[] dfName = parsedRecv.getTlvValue("84");
-//        String dfNameString = AscciHelper.toAsciiByte2String(dfName);
-//        log("DF Name : " + NumUtil.hex2Byte(dfName) + " ==> " + dfNameString);
-//        addText("DF Name", dfNameString);
-//
-//
-//        byte[] sfi = parsedRecv.getTlvValue("88");
-//        byte[] lang = parsedRecv.getTlvValue( "5F2D");
-//        String langValue = AscciHelper.toAsciiByte2String(lang);
-//        addText("Lang", langValue);
-//        addText("sfi", NumUtil.toHexString(sfi));
-//
-//        PseDirectory result = new PseDirectory(parsedRecv);
-//        result.lang = langValue;
-//        result.dfName = dfNameString;
-//        result.fsi = sfi[0];
-//
 //        log("[Step 1] END");
         return parsedRecv;
     }

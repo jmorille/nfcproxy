@@ -18,7 +18,7 @@ import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.service.nfc.NfcConsoleCallback;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
-import eu.ttbox.nfcproxy.service.nfc.reader.EmvCardReader;
+import eu.ttbox.nfcproxy.service.nfc.reader.emv41.EmvCardReader;
 import eu.ttbox.nfcproxy.service.nfc.reader.LoyaltyCardReader;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
@@ -185,6 +185,7 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
         consoleNfc.add(new NfcConsoleLine(key, value));
     }
 
+ 
     @Override
     public void onAccountReceived(final String account) {
         // This callback is run on a background thread, but updates to UI elements must be performed

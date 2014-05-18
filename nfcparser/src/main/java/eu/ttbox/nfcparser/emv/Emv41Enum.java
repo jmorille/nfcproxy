@@ -55,6 +55,7 @@ public enum Emv41Enum {
 
     Emv41Enum(String tag, Emv41TypeEnum type) {
         this(NumUtil.hex2ByteNoSpace(tag),  type);
+        System.out.println("--- Add tag : " + tag  + " ==> " + NumUtil.byte2Hex(  NumUtil.hex2ByteNoSpace(tag)));
     }
 
 
@@ -79,6 +80,7 @@ public enum Emv41Enum {
     }
 
     public static  Emv41Enum getByTag(RecvTag tag) {
+        System.out.println("byTag Size : " + byTag.keySet());
         return byTag.get(tag);
     }
 
