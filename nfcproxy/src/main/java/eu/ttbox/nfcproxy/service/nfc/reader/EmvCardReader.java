@@ -188,9 +188,8 @@ public class EmvCardReader  implements NfcReaderCallback {
         if (!errors.isEmpty()) {
             for (Err err : errors) {
                 Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv) + " ==> " + err);
+                log("SW " + NumUtil.byte2Hex(sw.getSw1()) + NumUtil.byte2Hex(sw.getSw2()), "(" + err.type + ") "  + err.desc );
             }
-        } else {
-            Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv));
         }
 
         return res;
