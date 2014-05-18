@@ -1,0 +1,276 @@
+package eu.ttbox.nfcproxy.domain.core;
+
+
+import android.annotation.TargetApi;
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
+import android.os.Build;
+import android.util.Log;
+
+import java.security.MessageDigest;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import eu.ttbox.nfcproxy.core.VersionUtils;
+
+public class UpgradeDbHelper {
+
+    private static final String TAG = "UpgradeDbHelper";
+
+    public static String[] concatAllCols(String[]... columns) {
+        int allColSize = 0;
+        // Compute Size
+        for (String[] colArray : columns) {
+            allColSize += colArray.length;
+        }
+        return concatAllCols(allColSize, columns);
+    }
+
+    public static String[] concatAllCols(int resultSize, String[]... groupColumns) {
+        String[] columns = new String[resultSize];
+        int dstPos = 0;
+        for (String[] colArray : groupColumns) {
+            System.arraycopy(colArray, 0, columns, dstPos, colArray.length);
+            dstPos += colArray.length;
+        }
+        return columns;
+    }
+
+    public static int[] convertColToIdx(Cursor cursor, String[] columNames) {
+        int[] colIdx = new int[columNames.length];
+        int i = 0;
+        for (String colName : columNames) {
+            colIdx[i++] = cursor.getColumnIndex(colName);
+        }
+        return colIdx;
+    }
+
+    public static ArrayList<ContentValues> copyTable(SQLiteDatabase db, String oldTable ) {
+        ArrayList<ContentValues> allRows = null;
+        Cursor cursor = null;
+        try {
+            cursor = db.query(oldTable, null, null, null, null, null, null);
+            allRows = new ArrayList<ContentValues>(cursor.getCount());
+            while (cursor.moveToNext()) {
+                ContentValues values = readCursorToContentValues(cursor );
+                if (values!=null) {
+                    allRows.add(values);
+                    Log.d(TAG, "Upgrading database " + oldTable + " : memory copy of row values : " + values);
+                }
+            }
+        } catch (SQLiteException e) {
+            Log.e(TAG, "error in copyTable " + oldTable + " : " + e.getMessage(), e);
+        } finally {
+            if (cursor!=null) {
+                cursor.close();
+            }
+        }
+        return  allRows;
+    }
+
+    public static ArrayList<ContentValues> copyTable(SQLiteDatabase db, String oldTable, String[] stringColums, String[] intColums, String[] longColums) {
+        ArrayList<ContentValues> allRows = null;
+        Cursor cursor = null;
+        try {
+            // Init Columns Arrays
+            //  int columnSize = stringColums.length + intColums.length + longColums.length;
+            String[] columns = null;//concatAllCols(columnSize, stringColums, intColums, longColums);
+            // Do copy Table
+            cursor = db.query(oldTable, columns, null, null, null, null, null);
+            // ContentResolver cr = context.getContentResolver();
+            allRows = new ArrayList<ContentValues>(cursor.getCount());
+            while (cursor.moveToNext()) {
+                Log.d(TAG, "Upgrading database :  Read row of table " + oldTable);
+                ContentValues values = readCursorToContentValues(cursor, stringColums, intColums, longColums);
+                // Insert Data
+                allRows.add(values);
+                // cr.insert(PairingProvider.Constants.CONTENT_URI, values);
+                Log.d(TAG, "Upgrading database " + oldTable + " : memory copy of row values : " + values);
+            }
+            Log.i(TAG, "Upgrading database " + oldTable + " : memory copy of " + allRows.size() + " rows. ");
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Upgrading database Error during memory copy of Table " + oldTable + " : " + e.getMessage(), e);
+            // allRows = null;
+        } finally {
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        return allRows;
+    }
+
+    public static ContentValues readCursorToContentValues(Cursor cursor ) {
+        ContentValues values = new ContentValues();
+        String[]  colNames = cursor.getColumnNames();
+        for (String colName : colNames) {
+            if (VersionUtils.isHc11) {
+                readCursorColumnToContentValuesForHoneyComb(cursor, values, colName);
+            } else {
+                readCursorColumnToContentValuesBeforeHoneyComb(cursor, values, colName);
+            }
+        }
+        return values;
+    }
+
+    private static void readCursorColumnToContentValuesBeforeHoneyComb(  Cursor cursor, ContentValues values , String colName) {
+        int colIdx =  cursor.getColumnIndex(colName);
+        String value = cursor.getString(colIdx);
+        values.put(colName, value);
+    }
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
+    private static void readCursorColumnToContentValuesForHoneyComb(  Cursor cursor, ContentValues values , String colName) {
+        int colIdx =  cursor.getColumnIndex(colName);
+        switch (cursor.getType(colIdx)) {
+            case  Cursor.FIELD_TYPE_STRING : {
+                String value = cursor.getString(colIdx);
+                values.put(colName, value);
+            }
+            break;
+            case  Cursor.FIELD_TYPE_NULL: {
+                Float value = cursor.getFloat(colIdx);
+                values.putNull(colName );
+            }
+            break;
+            case  Cursor.FIELD_TYPE_INTEGER: {
+                Integer value = cursor.getInt(colIdx);
+                values.put(colName, value);
+            }
+            break;
+            case  Cursor.FIELD_TYPE_FLOAT: {
+                Float value = cursor.getFloat(colIdx);
+                values.put(colName, value);
+            }
+            break;
+            default:
+                Log.w(TAG, "Not manage type for column Nanme : " + colName);
+                break;
+        }
+    }
+
+    public static ContentValues readCursorToContentValues(Cursor cursor, String[] stringColums, String[] intColums, String[] longColums) {
+        ContentValues values = new ContentValues(stringColums.length + intColums.length + longColums.length);
+        // Read String
+        for (String colName : stringColums) {
+            String colValue = cursor.getString(cursor.getColumnIndex(colName));
+            values.put(colName, colValue);
+        }
+        // Read Int
+        for (String colName : intColums) {
+            int colValue = cursor.getInt(cursor.getColumnIndex(colName));
+            values.put(colName, colValue);
+        }
+        // Read Long
+        for (String colName : longColums) {
+            long colValue = cursor.getLong(cursor.getColumnIndex(colName));
+            values.put(colName, colValue);
+        }
+        return values;
+    }
+
+    public static void computeMessageDigester(MessageDigest md, ContentValues values, List<String> ignoreFields) {
+        for (Map.Entry<String, Object> keyVal : values.valueSet()) {
+            String colName = keyVal.getKey();
+            if (ignoreFields.contains(colName)) {
+                Log.i(TAG, "Ignore Column : [" + colName + "] for in Ignore Fields List");
+                continue;
+            }
+            Object colValue = keyVal.getValue();
+            byte[] bytes = null;
+            if (colValue == null) {
+                Log.d(TAG, "Ignore Column : [" + colName + "] for value NULL");
+            } else if (colValue instanceof String) {
+                bytes = ((String) colValue).getBytes();
+            } else if (colValue instanceof Integer) {
+                Integer val = ((Integer) colValue);
+                bytes = new byte[] { val.byteValue() };
+            } else if (colValue instanceof Long) {
+                Long val = ((Long) colValue);
+
+            } else if (colValue instanceof Double) {
+            } else if (colValue instanceof Boolean) {
+            } else {
+                Log.w(TAG, "Ignore Column : [" + colName + "] for type " + (colValue != null ? colValue.getClass() : "null (" + colValue + ")"));
+            }
+            if (bytes != null) {
+                md.update(bytes);
+            }
+        }
+    }
+
+
+    public static ContentValues convertJsonMapAsContentValues(HashMap<String, Object> jsonMap, List<String> allValidColumns) {
+        // Values
+        ContentValues values = new ContentValues();
+        // Read
+        for (String colName : jsonMap.keySet()) {
+            if (allValidColumns.contains(colName)) {
+                Object colValue = jsonMap.get(colName);
+                if (colValue == null) {
+                    Log.d(TAG, "Ignore Column : [" + colName + "] for value NULL");
+                } else if (colValue instanceof String) {
+                    values.put(colName, (String) colValue);
+                } else if (colValue instanceof Integer) {
+                    values.put(colName, (Integer) colValue);
+                } else if (colValue instanceof Long) {
+                    values.put(colName, (Long) colValue);
+                } else if (colValue instanceof Double) {
+                    values.put(colName, (Double) colValue);
+                } else if (colValue instanceof Boolean) {
+                    values.put(colName, (Boolean) colValue);
+                } else {
+                    Log.w(TAG, "Ignore Column : [" + colName + "] for type " + (colValue != null ? colValue.getClass() : "null (" + colValue + ")"));
+                }
+            }
+        }
+        return values;
+    }
+
+    public static int insertOldRowInNewTable(SQLiteDatabase db, ArrayList<ContentValues> oldRows, String newTableName, List<String> validColumns) {
+        int resultCount = 0;
+        if (oldRows != null && !oldRows.isEmpty()) {
+            try {
+                db.beginTransaction();
+                for (ContentValues values : oldRows) {
+                    ContentValues filterValue = values;
+                    if (validColumns != null) {
+                        filterValue = filterContentValues(values, validColumns);
+                    }
+                    try {
+                        resultCount += db.insertOrThrow(newTableName, null, filterValue);
+                        Log.i(TAG, "Upgrading database " + newTableName + " : inserting memory copy of row values : " + filterValue);
+                    } catch (Exception e) {
+                        Log.w(TAG, "Error inserting Row Ignored in Table " + newTableName + " : " + e.getMessage());
+                    }
+                }
+                db.setTransactionSuccessful();
+            } catch (Exception e) {
+                Log.e(TAG, "Upgrading database Error Ignored during inserting the copy in Table " + newTableName + " : " + e.getMessage(), e);
+            } finally {
+                db.endTransaction();
+            }
+        }
+        return resultCount;
+    }
+
+    public static ContentValues filterContentValues(ContentValues values, List<String> validColumns) {
+        ContentValues result = null;
+        for (Map.Entry<String, Object> keyVal : values.valueSet()) {
+            String key = keyVal.getKey();
+            if (!validColumns.contains(key)) {
+                if (result == null) {
+                    result = new ContentValues(values);
+                }
+                result.remove(key);
+            }
+        }
+        return result == null ? values : result;
+    }
+
+
+}

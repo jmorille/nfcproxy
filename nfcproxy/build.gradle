@@ -1,0 +1,63 @@
+apply plugin: 'android'
+
+
+buildscript {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.10.+'
+    }
+}
+
+
+
+dependencies {
+    // compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile project(':nfcparser')
+
+    compile 'com.android.support:support-v4:19.1.+'
+}
+
+
+android {
+    compileSdkVersion 19
+    buildToolsVersion "19.1"
+
+    defaultConfig {
+        minSdkVersion 14
+        targetSdkVersion 14
+        versionCode 1
+        versionName "1.0"
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/NOTICE'
+    }
+
+    signingConfigs {
+        release {
+            storeFile file(ttboxSignKeystore)
+            storePassword ttboxSignStorepass
+            keyAlias "android"
+            keyPassword ttboxSignKeypass
+        }
+    }
+
+    buildTypes {
+        debug {
+            //signingConfig signingConfigs.debug
+            debuggable true
+        }
+        release {
+            debuggable false
+            runProguard true
+            zipAlign true
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+}
+
+
