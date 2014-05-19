@@ -89,11 +89,31 @@ public class AscciHelperTest {
         byte[] data = NumUtil.hex2ByteNoSpace(hexString);
         String text = AscciHelper.decodeFormatAN(data);
 
-        Assert.assertEquals("1PAY.SYS.DDF01", text);
         System.out.println("" + hexString + " ==> " + text);
+        Assert.assertEquals("1PAY.SYS.DDF01", text);
     }
 
+    @Test
+    public void testHolderName() {
+        String hexString = "02 50";
+        byte[] data = NumUtil.hex2Byte(hexString);
+        String text = AscciHelper.decodeFormatAN(data);
 
+        System.out.println("" + hexString + " ==> " + text);
+        Assert.assertEquals("Holdername", text);
+
+    }
+    // ===========================================================
+    // Format CN : Compressed Numeric
+    // ===========================================================
+
+    @Test
+    public   void byteCn2String() {
+        byte[] cnBytes = NumUtil.hex2Byte("12 34 56 78 90 12 3F FF");
+        String accountNumber = AscciHelper.byteCn2String(cnBytes);
+        Assert.assertEquals( "1234567890123", accountNumber);
+
+    }
 
     // ===========================================================
     // Other

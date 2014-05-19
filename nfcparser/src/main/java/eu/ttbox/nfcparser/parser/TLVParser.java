@@ -30,16 +30,24 @@ public class TLVParser {
     public static HashMap<RecvTag, byte[]> parseTVL(byte[] tlv, HashMap<RecvTag, byte[]> presult) {
         HashMap<RecvTag, byte[]> result = presult != null ? presult : new HashMap<RecvTag, byte[]>();
 
+      //  System.out.println("Parse  : " +  NumUtil.byte2HexNoSpace(tlv) );
         int tlvSize = tlv != null ? tlv.length : 0;
         for (int i = 0; i < tlvSize; ) {
             byte[] key = new byte[]{tlv[i++]};
             if ((key[0] & 0x1F) == 0x1F) {
                 key = new byte[]{key[0], tlv[i++]};
             }
+            System.out.println("  key :" +  NumUtil.byte2Hex(key) );
             byte len = tlv[i++];
-            int length = len;
+
+            int length = NumUtil.getUnsignedValue(len);
+          //  System.out.println("  value size  : 0x" +  NumUtil.byte2Hex(len)+" = "+length + " / " + tlvSize );
+            if (length+i>tlvSize) {
+               // throw new RuntimeException("Size error on parsing tag : "+ NumUtil.byte2Hex(key)+ " index "+ i + " with size " +length + "/"+tlvSize );
+            }
             byte[] val = Arrays.copyOfRange(tlv, i, i = i + length);
-            // System.out.println("parseTVL key " + NumUtil.hex2String(key) + "("+ length + ") ==> " + NumUtil.toHexString(val));
+             System.out.println("parseTVL key " + NumUtil.byte2Hex(key) + "("+ length + ") ==> " + NumUtil.byte2Hex(val)  );
+      //      System.out.println("---------------------------");
             RecvTag keyTag = new RecvTag(key, length);
             result.put(keyTag, val);
         }
@@ -62,7 +70,7 @@ public class TLVParser {
                 key = new byte[]{key[0], pdol[i++]};
             }
             byte len = pdol[i++];
-            int length = len;
+            int length = NumUtil.getUnsignedValue(len);
             RecvTag keyTag = new RecvTag(key, length);
             result.add(keyTag);
         }

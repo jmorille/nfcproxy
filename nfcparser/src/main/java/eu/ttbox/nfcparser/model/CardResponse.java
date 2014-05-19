@@ -18,15 +18,18 @@ package eu.ttbox.nfcparser.model;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
+import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.NumUtil;
 
 /**
  * The response from the smart card after a command is sent to the card. Contains a status word object
- *
  */
 public class CardResponse {
 
+    private byte[] command;
+
     private byte[] data;
+
     public StatusWord statusWord;
 
     public byte[] getData() {
@@ -45,6 +48,11 @@ public class CardResponse {
         this.statusWord = statusWord;
     }
 
+    public CardResponse(byte[] command, byte[] recv) {
+        this.command = command;
+        this.statusWord = new StatusWord(recv[recv.length - 2], recv[recv.length - 1]);
+        this.data =  TLVParser.getData(recv);
+    }
 
     public boolean isSuccess() {
         if (statusWord != null) {
@@ -54,34 +62,31 @@ public class CardResponse {
 
     }
 
-    public final byte[] getBytes() throws IOException {
-        byte[] byteArray;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    public final byte[] getBytes()   {
+        byte[] byteArray = null;
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
 
-        if (data != null) {
-            baos.write(data);
+            if (data != null) {
+                baos.write(data);
+            }
+            baos.write(statusWord.getSw1());
+            baos.write(statusWord.getSw2());
+
+            byteArray = baos.toByteArray();
+            baos.close();
+        } catch (IOException ioe) {
+            throw new RuntimeException("IOException :" + ioe.getMessage(), ioe);
         }
-        baos.write(statusWord.getSw1());
-        baos.write(statusWord.getSw2());
-
-        byteArray = baos.toByteArray();
-        baos.close();
-
         return byteArray;
     }
 
-    public final byte[] getRespBytes() throws IOException {
-        byte[] byteArray;
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-
-        if (data != null) {
-            baos.write(data);
-        }
-
-        byteArray = baos.toByteArray();
-        baos.close();
+    public final byte[] getCommandBytes() {
+        return command;
+    }
+    public final byte[] getRespBytes() {
+        byte[] byteArray = data;
 
         return byteArray;
     }

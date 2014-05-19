@@ -76,6 +76,17 @@ public class AscciHelper {
 
     }
 
+
+    // ===========================================================
+    // Format CN : Compressed Numeric
+    // ===========================================================
+
+    public static String byteCn2String(byte[] bytes) {
+        String result = NumUtil.byte2HexNoSpace(bytes);
+    // TODO Exclude 0xFF
+        return result;
+    }
+
     // ===========================================================
     // Other
     // ===========================================================

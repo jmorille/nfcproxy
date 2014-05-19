@@ -19,6 +19,7 @@ public class PseDirectory {
     }
 
     public byte[] getAid() {
+        // AID = A0000000031010 ==> Visa credit or debit
         return parsedRecv.getTlvValue(Emv41Enum.DF_ADF_NAME);
     }
 

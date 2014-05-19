@@ -19,9 +19,15 @@ public enum Emv41Enum {
     BIC("5F54",  Emv41TypeEnum.TLV),
     IBAN("5F53",  Emv41TypeEnum.TLV),
 
+    Application_Primary_Account_Number_PAN("5A", Emv41TypeEnum.CN),
+    Application_Expiration_Date("5F24", Emv41TypeEnum.YYMMDD),
+    Application_Usage_Control("9F07", Emv41TypeEnum.UNNKOWN),
+
     READ_RECORD_Response_Message_Template("70",  Emv41TypeEnum.TLV),
     Response_Message_Template_Format_1("80",  Emv41TypeEnum.TLV),
     Response_Message_Template_Format_2("77",  Emv41TypeEnum.TLV),
+
+    	Log_Entry_SFI("9F4D", Emv41TypeEnum.UNNKOWN),
 
     // TODO find ref
     PDOL("9F38", Emv41TypeEnum.UNNKOWN),
@@ -39,14 +45,13 @@ public enum Emv41Enum {
 
     // refer to EMV 4.1 Book 1 - Section 12.2.3
     DF_ADF_NAME("4F", Emv41TypeEnum.UNNKOWN),
-    DF_ADF_LABEL("50", Emv41TypeEnum.UNNKOWN),
-    DF_ADF_PREFERRED_NAME("9F12", Emv41TypeEnum.UNNKOWN),
+    DF_ADF_LABEL("50", Emv41TypeEnum.STRING),
+    DF_ADF_PREFERRED_NAME("9F12", Emv41TypeEnum.STRING),
     DF_ADF_PRIORITY("87", Emv41TypeEnum.UNNKOWN),
 
     // refer to EMV 4.1 Book 3 - Annex A - Data Elements Dictionary
     TRACK2_EQUIV_DATA("57", Emv41TypeEnum.UNNKOWN),
-    CARDHOLDER_NAME("5F20", Emv41TypeEnum.UNNKOWN);
-
+    CARDHOLDER_NAME("5F20", Emv41TypeEnum.STRING);
 
 
     public final RecvTag tag;
@@ -55,7 +60,7 @@ public enum Emv41Enum {
 
     Emv41Enum(String tag, Emv41TypeEnum type) {
         this(NumUtil.hex2ByteNoSpace(tag),  type);
-        System.out.println("--- Add tag : " + tag  + " ==> " + NumUtil.byte2Hex(  NumUtil.hex2ByteNoSpace(tag)));
+     //   System.out.println("--- Add tag : " + tag  + " ==> " + NumUtil.byte2Hex(  NumUtil.hex2ByteNoSpace(tag)));
     }
 
 
@@ -80,7 +85,7 @@ public enum Emv41Enum {
     }
 
     public static  Emv41Enum getByTag(RecvTag tag) {
-        System.out.println("byTag Size : " + byTag.keySet());
+       //System.out.println("byTag Size : " + byTag.keySet());
         return byTag.get(tag);
     }
 

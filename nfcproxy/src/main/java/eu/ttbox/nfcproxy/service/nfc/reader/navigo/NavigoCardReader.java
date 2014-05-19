@@ -153,10 +153,10 @@ public class NavigoCardReader implements NfcReaderCallback {
             Log.d(TAG, "Received: " + AscciHelper.toAsciiByte2String(bytes));
         }
         // Create CardResponse
-        CardResponse res = new CardResponse();
-        StatusWord sw = new StatusWord(recv[recv.length - 2], recv[recv.length - 1]);
-        res.setData(recvData);
-        res.setStatusWord(sw);
+        CardResponse res = new CardResponse(bytes, recv);
+//        StatusWord sw = new StatusWord(recv[recv.length - 2], recv[recv.length - 1]);
+//        res.setData(recvData);
+//        res.setStatusWord(sw);
 
 
         // --> error list http://www.eftlab.co.uk/index.php/site-map/knowledge-base/118-apdu-response-list
@@ -165,6 +165,7 @@ public class NavigoCardReader implements NfcReaderCallback {
         if (!errors.isEmpty()) {
             for (Err err : errors) {
                 Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv) + " ==> " + err);
+                StatusWord sw = res.getStatusWord();
                 log("SW " + NumUtil.byte2Hex(sw.getSw1()) + NumUtil.byte2Hex(sw.getSw2()), "(" + err.type + ") "  + err.desc );
             }
         }
