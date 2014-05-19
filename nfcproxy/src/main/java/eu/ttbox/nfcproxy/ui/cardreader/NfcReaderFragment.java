@@ -20,6 +20,7 @@ import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
 import eu.ttbox.nfcproxy.service.nfc.reader.emv41.EmvCardReader;
 import eu.ttbox.nfcproxy.service.nfc.reader.LoyaltyCardReader;
+import eu.ttbox.nfcproxy.ui.MainActivity;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
 
@@ -47,9 +48,27 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
     private NfcConsoleArrayAdapter consoleNfc;
 
     // ===========================================================
+    // Static
+    // ===========================================================
+
+
+    public static NfcReaderFragment newInstance(int sectionNumber) {
+        NfcReaderFragment fragment = new NfcReaderFragment();
+        Bundle args = new Bundle();
+        args.putInt(MainActivity.ARG_SECTION_NUMBER, sectionNumber);
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+
+    // ===========================================================
     // Constructor
     // ===========================================================
 
+
+    public NfcReaderFragment() {
+        super();
+    }
 
     /**
      * Called when sample is created. Displays generic UI with welcome text.
@@ -87,6 +106,17 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
     // ===========================================================
     // Life Cycle
     // ===========================================================
+
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        // Title Listener
+        if (activity instanceof  MainActivity) {
+            MainActivity parentMain = (MainActivity)activity;
+            parentMain.onSectionAttached(  getArguments().getInt(MainActivity.ARG_SECTION_NUMBER));
+        }
+    }
 
     @Override
     public void onPause() {

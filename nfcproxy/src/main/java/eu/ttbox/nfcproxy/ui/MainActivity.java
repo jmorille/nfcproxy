@@ -8,6 +8,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,6 +25,14 @@ import eu.ttbox.nfcproxy.ui.readernfc.NfcReplayFragment;
 
 public class MainActivity extends Activity
         implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+
+    private static final String TAG = "MainActivity";
+
+    /**
+     * The fragment argument representing the section number for this
+     * fragment.
+     */
+    public static final String ARG_SECTION_NUMBER = "section_number";
 
     /**
      * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
@@ -61,29 +70,33 @@ public class MainActivity extends Activity
 
     @Override
     public void onNavigationDrawerItemSelected(int position) {
+        // Select matching Fragment
+        Log.d(TAG, "onNavigationDrawerItemSelected : position = " + position);
+        Fragment toReplaceFragment = null;
+        switch (position) {
+            case 0:
+                toReplaceFragment =  NfcReaderFragment.newInstance(position + 1);
+                break;
+            case 2:
+                toReplaceFragment =   NfcReplayFragment.newInstance(position + 1);
+                break;
+            case 3:
+                toReplaceFragment= PlaceholderFragment.newInstance(position + 1);
+
+                break;
+            default:
+                toReplaceFragment= PlaceholderFragment.newInstance(position + 1);
+                break;
+        }
         // update the main content by replacing fragments
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-        int number = position+1;
-        switch (number) {
-            case 1:
-                fragmentTransaction.replace(R.id.container, PlaceholderFragment.newInstance(position + 1));
-                break;
-            case 2:
-                NfcReplayFragment nfcReaderFragment = new NfcReplayFragment();
-                fragmentTransaction.replace(R.id.container, nfcReaderFragment);
-                break;
-            case 3:
-                NfcReaderFragment cardReaderFragment = new NfcReaderFragment();
-                fragmentTransaction.replace(R.id.container, cardReaderFragment);
-                break;
-        }
-
+        fragmentTransaction.replace(R.id.container, toReplaceFragment);
         fragmentTransaction.commit();
     }
 
     public void onSectionAttached(int number) {
+        Log.d(TAG, "onSectionAttached : number = " + number);
         switch (number) {
             case 1:
                 mTitle = getString(R.string.title_section1);
@@ -143,11 +156,7 @@ public class MainActivity extends Activity
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
+
 
         /**
          * Returns a new instance of this fragment for the given section

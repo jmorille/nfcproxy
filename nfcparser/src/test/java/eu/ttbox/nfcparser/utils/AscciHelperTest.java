@@ -43,7 +43,7 @@ public class AscciHelperTest {
     public void testAscci2Hex() {
         String fileName = "1PAY.SYS.DDF01";
         byte[] text = AscciHelper.toAsciiString2Bytes(fileName);
-        String texthex = NumUtil.byte2Hex(text);
+        String texthex = NumUtil.byte2HexNoSpace(text);
         Assert.assertEquals("315041592E5359532E4444463031", texthex);
         System.out.println("" + fileName + " ==> " + texthex);
     }
@@ -101,21 +101,21 @@ public class AscciHelperTest {
 
 
     @Test
-    public void testNavigoAscci2Hex() {
-        String fileName = "1PAY.SYS.DDF01";
+    public void toAsciiString2BytesNavigoFile() {
+        String fileName = "1TIC.ICA";
         byte[] text = AscciHelper.toAsciiString2Bytes(fileName);
         String texthex = NumUtil.byte2HexNoSpace(text);
-        Assert.assertEquals("315041592E5359532E4444463031", texthex);
         System.out.println("" + fileName + " ==> " + texthex);
+        Assert.assertEquals("315449432E494341", texthex);
     }
 
     @Test
-    public void testNavigoHex2Ascci() {
-        String hexString = "2000";
+    public void toAsciiByte2StringNavigoFile() {
+        String hexString = "315449432E494341";
         byte[] data = NumUtil.hex2ByteNoSpace(hexString);
         String text = AscciHelper.toAsciiByte2String(data);
 
-        Assert.assertEquals("1PAY.SYS.DDF01", text);
+        Assert.assertEquals("1TIC.ICA", text);
         System.out.println("" + hexString + " ==> " + text);
     }
 

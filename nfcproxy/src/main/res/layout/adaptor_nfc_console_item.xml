@@ -8,14 +8,14 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Key"
+        android:text="@string/sample_console_key"
         android:id="@+id/nfcconsole_key" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="Value"
+        android:text="@string/sample_console_value"
         android:paddingLeft="10dp"
         android:id="@+id/nfcconsole_value" />
 </LinearLayout>

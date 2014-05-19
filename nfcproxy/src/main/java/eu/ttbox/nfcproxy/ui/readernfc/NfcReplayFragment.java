@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 
 import eu.ttbox.nfcproxy.R;
+import eu.ttbox.nfcproxy.ui.MainActivity;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
 
@@ -27,8 +28,8 @@ public class NfcReplayFragment extends ListFragment {
     private static final String ARG_PARAM2 = "param2";
 
     // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+//    private String mParam1;
+//    private String mParam2;
 
     private OnFragmentInteractionListener mListener;
 
@@ -38,12 +39,11 @@ public class NfcReplayFragment extends ListFragment {
     // Static
     // ===========================================================
 
-    // TODO: Rename and change types of parameters
-    public static NfcReplayFragment newInstance(String param1, String param2) {
+
+    public static NfcReplayFragment newInstance(int sectionNumber) {
         NfcReplayFragment fragment = new NfcReplayFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
+        args.putInt(MainActivity.ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
@@ -66,10 +66,10 @@ public class NfcReplayFragment extends ListFragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+//        if (getArguments() != null) {
+//            mParam1 = getArguments().getInt(MainActivity.ARG_SECTION_NUMBER);
+//            mParam2 = getArguments().getString(ARG_PARAM2);
+//        }
 
         // Adapter
         consoleNfc = new NfcConsoleArrayAdapter(getActivity());
@@ -84,7 +84,7 @@ public class NfcReplayFragment extends ListFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_nfc_proxy, container, false);
-
+        // Mock Data
         consoleNfc.add(new NfcConsoleLine("Send Replay" , "00 A4 00 00"));
         return v;
     }
@@ -100,11 +100,19 @@ public class NfcReplayFragment extends ListFragment {
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        try {
-          //TODO  mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                + " must implement OnFragmentInteractionListener");
+        // Title Listener
+        if (activity instanceof  MainActivity) {
+            MainActivity parentMain = (MainActivity)activity;
+            parentMain.onSectionAttached(  getArguments().getInt(MainActivity.ARG_SECTION_NUMBER));
+        }
+        // Register Callback Listener
+        if (activity instanceof  OnFragmentInteractionListener) {
+            try {
+                  mListener = (OnFragmentInteractionListener) activity;
+            } catch (ClassCastException e) {
+                throw new ClassCastException(activity.toString()
+                        + " must implement OnFragmentInteractionListener");
+            }
         }
     }
 

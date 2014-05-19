@@ -24,8 +24,8 @@ public class NumUtil {
 
 
     // table to convert a nibble to a hex char.
-    private static String hexits = "0123456789ABCDEF";
-    private static final char[] hexChar = hexits.toCharArray();
+    private static String hexits = "0123456789abcdef";
+    private static final char[] hexChar = "0123456789ABCDEF".toCharArray();
 
     // ===========================================================
     // HexString conversion to Bytes
