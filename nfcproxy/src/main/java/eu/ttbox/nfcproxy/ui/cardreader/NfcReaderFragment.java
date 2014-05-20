@@ -10,16 +10,21 @@ import android.nfc.tech.IsoDep;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import eu.ttbox.nfcparser.utils.NumUtil;
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.service.nfc.NfcConsoleCallback;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
 import eu.ttbox.nfcproxy.service.nfc.reader.emv41.EmvCardReader;
 import eu.ttbox.nfcproxy.service.nfc.reader.LoyaltyCardReader;
+import eu.ttbox.nfcproxy.service.nfc.reader.navigo.NavigoCardReader;
 import eu.ttbox.nfcproxy.ui.MainActivity;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
@@ -92,15 +97,38 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
         mStatusField.setText("Waiting...");
 
         mLoyaltyCardReader = new EmvCardReader(this);
-
+//        mLoyaltyCardReader = new NavigoCardReader(this);
         //
 
         // Disable Android Beam and register our card reader callback
         //enableReaderMode();
 
-
+        // Register fragment menu
+        setHasOptionsMenu(true);
         return v;
     }
+
+    // ===========================================================
+    // Menu
+    // ===========================================================
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.nfc_console, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_nfc_console_clear:
+                consoleNfc.clear();
+                return true;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
 
 
     // ===========================================================
@@ -166,6 +194,7 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
         if (nfcReceiver != null) {
             activity.unregisterReceiver(nfcReceiver);
         }
+        mStatusField.setText("");
     }
 
 
@@ -203,12 +232,29 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
         PendingIntent nfcintent = PendingIntent.getBroadcast(activity, 0, intent, 0);
         // Enable
         nfc.enableForegroundDispatch(activity, nfcintent, null, nfctechfilter);
+        // Status
+        mStatusField.setText("Ready to read Nfc Tag...."  );
     }
 
 
     // ===========================================================
     // Service Callback
     // ===========================================================
+
+    @Override
+    public void onTagDiscovered(byte[] tagId){
+        String tagIdString =  NumUtil.byte2HexNoSpace(tagId);
+        mStatusField.setText("Tag Discovered : " + tagIdString );
+        consoleNfc.add(new NfcConsoleLine("Tag Discovered", tagIdString));
+    }
+
+    @Override
+    public void onTagClose(byte[] tagId){
+        String tagIdString =  NumUtil.byte2HexNoSpace(tagId);
+        mStatusField.setText("Tag Close : " + tagIdString );
+        consoleNfc.add(new NfcConsoleLine("Tag Close", tagIdString));
+    }
+
 
     @Override
     public void onConsoleLog(String key, String value){

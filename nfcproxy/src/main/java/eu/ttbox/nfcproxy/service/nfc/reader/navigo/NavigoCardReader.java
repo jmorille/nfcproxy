@@ -13,8 +13,8 @@ import java.util.Map;
 import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.emv.Emv41TypeEnum;
 import eu.ttbox.nfcparser.emv.parser.EmvTLVParser;
-import eu.ttbox.nfcparser.emv.status.Err;
-import eu.ttbox.nfcparser.emv.status.Errors;
+import eu.ttbox.nfcparser.emv.status.Emv41SWLabel;
+import eu.ttbox.nfcparser.emv.status.Emv41SWLabelItem;
 import eu.ttbox.nfcparser.model.CardResponse;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.model.StatusWord;
@@ -42,7 +42,6 @@ public class NavigoCardReader implements NfcReaderCallback {
     }
 
 
-
     // ===========================================================
     // Tag Connector
     // ===========================================================
@@ -50,15 +49,21 @@ public class NavigoCardReader implements NfcReaderCallback {
     @Override
     public void onTagDiscovered(Tag tag) {
         byte[] tagId = tag.getId();
+        logOnTagDiscovered(tagId);
         Log.d(TAG, "New tag discovered : " + NumUtil.byte2Hex(tagId));
         log("Tag Id", tagId);
         IsoDep isoDep = IsoDep.get(tag);
         if (isoDep != null) {
             try {
+                // Connect Tag
                 isoDep.connect();
+                // Read Tags
                 onTagConnected(isoDep);
+                // Close Tags
+                isoDep.close();
+                logOnTagClose(tagId);
             } catch (IOException e) {
-                String errorMessage = e.getMessage() !=null? e.getMessage() : e.getClass().getSimpleName();
+                String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                 Log.e(TAG, "Error reading nfc : " + errorMessage, e);
             }
         }
@@ -69,20 +74,19 @@ public class NavigoCardReader implements NfcReaderCallback {
     // Constructor
     // ===========================================================
 
-    private void onTagConnected( IsoDep isoDep) throws IOException{
-         // Select Master File
+    private void onTagConnected(IsoDep isoDep) throws IOException {
+        // Select Master File
         selectMasterFile(isoDep);
         selectPseDirectoryNavigo(isoDep);
     }
 
     private void selectMasterFile(IsoDep isoDep) throws IOException {
         String title = "[Step 0] SELECT FILE Master File (if available)";
-        log("[Step 0]", "SELECT FILE Master File (if available)" );
+        log("[Step 0]", "SELECT FILE Master File (if available)");
         CardResponse fcp = transceive(isoDep, "00 A4 04 00");
         byte[] recv = fcp.getData();
         StatusWord sw = fcp.getStatusWord();
     }
-
 
 
     private void selectPseDirectoryNavigo(IsoDep isoDep) throws IOException {
@@ -90,7 +94,6 @@ public class NavigoCardReader implements NfcReaderCallback {
         String fileName = "1TIC.ICA";
         selectPseDirectory(isoDep, fileName);
     }
-
 
 
     /**
@@ -102,7 +105,7 @@ public class NavigoCardReader implements NfcReaderCallback {
      */
     private EmvTLVParser selectPseDirectory(IsoDep isoDep, String fileName) throws IOException {
         // [Step 1] Select 1PAY.SYS.DDF01 to get the PSE directory
-         log("[Step 1]", "Select " + fileName + " to get the PSE directory");
+        log("[Step 1]", "Select " + fileName + " to get the PSE directory");
 
         byte[] fileNameAsBytes = AscciHelper.toAsciiString2Bytes(fileName);
         String fileNameSize = NumUtil.byte2Hex(new byte[]{(byte) fileNameAsBytes.length});
@@ -116,7 +119,6 @@ public class NavigoCardReader implements NfcReaderCallback {
         //addText("[Step 1] Select 2PAY.SYS.DDF01 to get the PSE directory");
         //log("[Step 1] Select 2PAY.SYS.DDF01 to get the PSE directory");
         //byte[] recv = transceive("00 A4 04 00 0E 32 50 41 59 2E 53 59 53 2E 44 44 46 30 31 00");
-
 
 
         // Parse Pse Direcory
@@ -134,17 +136,16 @@ public class NavigoCardReader implements NfcReaderCallback {
     // ===========================================================
 
 
-
     protected CardResponse transceive(IsoDep tagcomm, String command) throws IOException {
         byte[] bytes = NumUtil.hex2Byte(command);
-        return  transceive(tagcomm, bytes);
+        return transceive(tagcomm, bytes);
     }
 
     protected CardResponse transceive(IsoDep tagcomm, byte[] bytes) throws IOException {
-        Log.d(TAG, "Send: " + NumUtil.byte2Hex(bytes) );
+        Log.d(TAG, "Send: " + NumUtil.byte2Hex(bytes));
         log("Send", bytes);
         byte[] recv = tagcomm.transceive(bytes);
-        Log.d(TAG, "Received: " + NumUtil.byte2Hex(bytes) );
+        Log.d(TAG, "Received: " + NumUtil.byte2Hex(bytes));
         log("Recv", recv);
 
         // Log Datas
@@ -161,12 +162,12 @@ public class NavigoCardReader implements NfcReaderCallback {
 
         // --> error list http://www.eftlab.co.uk/index.php/site-map/knowledge-base/118-apdu-response-list
         // Parse Error
-        ArrayList<Err> errors = Errors.getError(recv);
+        ArrayList<Emv41SWLabelItem> errors = Emv41SWLabel.getError(recv);
         if (!errors.isEmpty()) {
-            for (Err err : errors) {
+            for (Emv41SWLabelItem err : errors) {
                 Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv) + " ==> " + err);
                 StatusWord sw = res.getStatusWord();
-                log("SW " + NumUtil.byte2Hex(sw.getSw1()) + NumUtil.byte2Hex(sw.getSw2()), "(" + err.type + ") "  + err.desc );
+                log("SW " + NumUtil.byte2Hex(sw.getSw1()) + NumUtil.byte2Hex(sw.getSw2()), "(" + err.type + ") " + err.desc);
             }
         }
 
@@ -176,6 +177,20 @@ public class NavigoCardReader implements NfcReaderCallback {
     // ===========================================================
     // Console
     // ===========================================================
+
+    private void logOnTagDiscovered(byte[] tagId) {
+        NfcConsoleCallback console = consoleLog.get();
+        if (console != null) {
+            console.onTagDiscovered(tagId);
+        }
+    }
+
+    private void logOnTagClose(byte[] tagId) {
+        NfcConsoleCallback console = consoleLog.get();
+        if (console != null) {
+            console.onTagClose(tagId);
+        }
+    }
 
 
     private void log(EmvTLVParser parsedRecv) {
@@ -193,8 +208,8 @@ public class NavigoCardReader implements NfcReaderCallback {
                 keyLabel = emv.name() + "(" + NumUtil.byte2HexNoSpace(tag.key) + ")";
                 valueLabel = emv.toString(tagValue);
             }
-            log("  " ,keyLabel);
-            log("  " ,valueLabel);
+            log("  ", keyLabel);
+            log("  ", valueLabel);
 
         }
     }
@@ -206,7 +221,7 @@ public class NavigoCardReader implements NfcReaderCallback {
 
     private void log(String key, String value) {
         NfcConsoleCallback console = consoleLog.get();
-        if (console!=null) {
+        if (console != null) {
             console.onConsoleLog(key, value);
         }
     }

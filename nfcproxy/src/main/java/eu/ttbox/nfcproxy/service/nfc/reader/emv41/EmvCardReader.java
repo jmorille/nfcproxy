@@ -15,8 +15,8 @@ import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.emv.Emv41TypeEnum;
 import eu.ttbox.nfcparser.emv.generator.PdolGenerator;
 import eu.ttbox.nfcparser.emv.parser.EmvTLVParser;
-import eu.ttbox.nfcparser.emv.status.Err;
-import eu.ttbox.nfcparser.emv.status.Errors;
+import eu.ttbox.nfcparser.emv.status.Emv41SWLabel;
+import eu.ttbox.nfcparser.emv.status.Emv41SWLabelItem;
 import eu.ttbox.nfcparser.model.CardResponse;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.model.StatusWord;
@@ -51,6 +51,7 @@ public class EmvCardReader implements NfcReaderCallback {
     @Override
     public void onTagDiscovered(Tag tag) {
         byte[] tagId = tag.getId();
+        logOnTagDiscovered(tagId);
         Log.d(TAG, "New tag discovered : " + NumUtil.byte2Hex(tagId));
         log("Reading Tag Id", tagId);
         IsoDep isoDep = IsoDep.get(tag);
@@ -60,7 +61,7 @@ public class EmvCardReader implements NfcReaderCallback {
                 onTagConnected(isoDep);
                 //Close Tag
                 isoDep.close();
-                log("End reading tagId : ",  tagId);
+                logOnTagClose(tagId);
             } catch (IOException e) {
                 String errorMessage = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
                 Log.e(TAG, "Error reading nfc : " + errorMessage, e);
@@ -334,9 +335,9 @@ public class EmvCardReader implements NfcReaderCallback {
 
         // --> error list http://www.eftlab.co.uk/index.php/site-map/knowledge-base/118-apdu-response-list
         // Parse Error
-        ArrayList<Err> errors = Errors.getError(recv);
+        ArrayList<Emv41SWLabelItem> errors = Emv41SWLabel.getError(recv);
         if ( !errors.isEmpty()) {
-            for (Err err : errors) {
+            for (Emv41SWLabelItem err : errors) {
                // Log.d(TAG, "Received: " + NumUtil.byte2Hex(recv) + " ==> " + err);
                 StatusWord sw = res.getStatusWord();
                 log("SW " + NumUtil.byte2Hex(sw.getSw1()) + NumUtil.byte2Hex(sw.getSw2()), "(" + err.type + ") " + err.desc);
@@ -349,6 +350,21 @@ public class EmvCardReader implements NfcReaderCallback {
     // ===========================================================
     // Console
     // ===========================================================
+
+
+    private void logOnTagDiscovered(byte[] tagId) {
+        NfcConsoleCallback console = consoleLog.get();
+        if (console != null) {
+            console.onTagDiscovered(tagId);
+        }
+    }
+
+    private void logOnTagClose(byte[] tagId) {
+        NfcConsoleCallback console = consoleLog.get();
+        if (console != null) {
+            console.onTagClose(tagId);
+        }
+    }
 
 
     private void log(EmvTLVParser parsedRecv) {

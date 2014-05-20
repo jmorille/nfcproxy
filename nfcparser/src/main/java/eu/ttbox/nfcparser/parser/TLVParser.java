@@ -33,26 +33,37 @@ public class TLVParser {
       //  System.out.println("Parse  : " +  NumUtil.byte2HexNoSpace(tlv) );
         int tlvSize = tlv != null ? tlv.length : 0;
         for (int i = 0; i < tlvSize; ) {
-            byte[] key = new byte[]{tlv[i++]};
-            if ((key[0] & 0x1F) == 0x1F) {
-                key = new byte[]{key[0], tlv[i++]};
-            }
-            System.out.println("  key :" +  NumUtil.byte2Hex(key) );
-            byte len = tlv[i++];
+            RecvTag keyTag = getFirstTVLKey(tlv, i);
+            i += keyTag.key.length; // Increment pointer
+            i +=  1; // Value Size
 
-            int length = NumUtil.getUnsignedValue(len);
           //  System.out.println("  value size  : 0x" +  NumUtil.byte2Hex(len)+" = "+length + " / " + tlvSize );
-            if (length+i>tlvSize) {
+            int valueIndiceEnd = i + keyTag.valueSize;
+            if (valueIndiceEnd>tlvSize) {
                // throw new RuntimeException("Size error on parsing tag : "+ NumUtil.byte2Hex(key)+ " index "+ i + " with size " +length + "/"+tlvSize );
             }
-            byte[] val = Arrays.copyOfRange(tlv, i, i = i + length);
-             System.out.println("parseTVL key " + NumUtil.byte2Hex(key) + "("+ length + ") ==> " + NumUtil.byte2Hex(val)  );
+            byte[] val = Arrays.copyOfRange(tlv, i, i = valueIndiceEnd);
+           //  System.out.println("parseTVL key " + NumUtil.byte2Hex(keyTag.key) + "("+ keyTag.valueSize + ") ==> " + NumUtil.byte2Hex(val)  );
       //      System.out.println("---------------------------");
-            RecvTag keyTag = new RecvTag(key, length);
+
             result.put(keyTag, val);
         }
-
         return result;
+    }
+
+    public static RecvTag getFirstTVLKey(byte[] tlv, int indiceStart) {
+        int i = indiceStart;
+        // Key
+        byte[] key = new byte[]{tlv[i++]};
+        if ((key[0] & 0x1F) == 0x1F) {
+            key = new byte[]{key[0], tlv[i++]};
+        }
+        // Value Size
+        byte len = tlv[i++];
+        int length = NumUtil.getUnsignedValue(len);
+        // Create Key
+        RecvTag keyTag = new RecvTag(key, length);
+        return keyTag;
     }
 
     /**
@@ -65,13 +76,9 @@ public class TLVParser {
         ArrayList<RecvTag> result = new ArrayList<RecvTag>();
         int tlvSize = pdol != null ? pdol.length : 0;
         for (int i = 0; i < tlvSize; ) {
-            byte[] key = new byte[]{pdol[i++]};
-            if ((key[0] & 0x1F) == 0x1F) {
-                key = new byte[]{key[0], pdol[i++]};
-            }
-            byte len = pdol[i++];
-            int length = NumUtil.getUnsignedValue(len);
-            RecvTag keyTag = new RecvTag(key, length);
+            RecvTag keyTag = getFirstTVLKey(pdol, i);
+            i += keyTag.key.length; // Increment pointer
+            i +=  1; // Value Size
             result.add(keyTag);
         }
         return result;
@@ -86,7 +93,6 @@ public class TLVParser {
         RecvTag keyMap = new RecvTag(key);
         return getTlvValue(parsed, keyMap);
     }
-
 
     public static byte[] getTlvValue(HashMap<RecvTag, byte[]> parsed, RecvTag keyMap) {
         return parsed.get(keyMap);
