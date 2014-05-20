@@ -21,6 +21,7 @@ import eu.ttbox.nfcparser.model.CardResponse;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.model.StatusWord;
 import eu.ttbox.nfcparser.parser.TLVParser;
+import eu.ttbox.nfcparser.emv.parser.ApplicationFileLocator;
 import eu.ttbox.nfcparser.utils.AscciHelper;
 import eu.ttbox.nfcparser.utils.NumUtil;
 import eu.ttbox.nfcproxy.service.nfc.NfcConsoleCallback;
@@ -182,14 +183,14 @@ public class EmvCardReader implements NfcReaderCallback {
         byte lenghtDirectoryOne = application[1];
         // Application Id
         //  application[2] == 0x4F
-        byte appIdSize = application[3];
+        int appIdSize = NumUtil.getUnsignedValue(  application[3]);
         //  addText("appIdSize", NumUtil.toHexString(new byte[]{application[3]}));
         int appIdLenght = 4 + appIdSize;
         byte[] appId = Arrays.copyOfRange(application, 4, appIdLenght);
         log("App ID", NumUtil.byte2Hex(appId));
 
         // application[appIdLenght+1] == 0x50
-        byte appLabelSize = application[appIdLenght + 1];
+        int appLabelSize = NumUtil.getUnsignedValue( application[appIdLenght + 1]);
         //  addText("appLabelSize", NumUtil.toHexString(new byte[]{appLabelSize}));
         int appLabelLenght = appIdLenght + appLabelSize + 2;
 
@@ -231,12 +232,11 @@ public class EmvCardReader implements NfcReaderCallback {
                 }
 
                 PdolGenerator pdolGen = new PdolGenerator(pdol);
-                log("  pdol data", pdolGen.generatePdolRequestData());
                 getGPO(isoDep, pdolGen);
 
 
             }
-            if (  card.isSuccess()) {
+            if (false &&  card.isSuccess()) {
 
                 log("[Step 3]", "Read All Aid Record of Aid " + aidAsHex);
 
@@ -262,7 +262,7 @@ public class EmvCardReader implements NfcReaderCallback {
     }
 
 
-    public void getGPO(IsoDep isoDep,PdolGenerator pdolGen) throws IOException {
+    public void getGPO(IsoDep isoDep, PdolGenerator pdolGen) throws IOException {
         //http://stackoverflow.com/questions/15059580/reading-emv-card-using-ppse-and-not-pse
         // http://www.acbm.com/inedits/cartes-bancaires-sans-contact.html
 
@@ -288,9 +288,12 @@ public class EmvCardReader implements NfcReaderCallback {
 
         //       80A800000483020804
         CardResponse card = transceive(isoDep, "80 A8 00 00 " + NumUtil.byte2Hex(lcDataLe));
-        byte[] recv = card.getData();
+       if (card.isSuccess()) {
+            ApplicationFileLocator afl = new ApplicationFileLocator(card.getData());
+           readRecordAFL(isoDep, afl);
+       }
 
-      //  GetAFL afl = ApplicationFileLocatorParser.parseAFL(recv);
+
        // return afl;
         //TODO [Step 5] = Send GET PROCESSING OPTIONS command
         // Send = 80 A8 00 00 23 83 21 32 00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 02 50 00 00 00 00 00 09 78 14 06 28 00 E4 EC 9E 52 00
@@ -298,6 +301,24 @@ public class EmvCardReader implements NfcReaderCallback {
 
     }
 
+
+    public void readRecordAFL(IsoDep isoDep, ApplicationFileLocator afl) throws IOException {
+
+        log("[Step 6]", "Send READ RECORD with 0 to find out where the record is");
+
+        for (ApplicationFileLocator.AflRecord record : afl.records) {
+            int sfi = record.sfi;
+            int begin = record.recordNumberBegin;
+            byte[] cmd = Iso7816Commands.readRecord(begin, sfi);
+            CardResponse card = transceive(  isoDep, cmd);
+
+            if (card.isSuccess()) {
+                log(card);
+            }
+
+        }
+
+    }
 
     // ===========================================================
     // NFC Transceive

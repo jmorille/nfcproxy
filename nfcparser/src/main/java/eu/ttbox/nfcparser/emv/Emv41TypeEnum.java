@@ -4,7 +4,21 @@ package eu.ttbox.nfcparser.emv;
 import eu.ttbox.nfcparser.utils.AscciHelper;
 import eu.ttbox.nfcparser.utils.NumUtil;
 
+// https://github.com/jpos/jPOS/blob/master/jpos/src/main/java/org/jpos/tlv/TLVDataFormat.java
 public enum Emv41TypeEnum {
+
+//    CONSTRUCTED,
+//    BINARY,
+//    COMPRESSED_NUMERIC,
+//    NUMERIC,
+//    DATE_YYMMDD,
+//    ALPHA,
+//    ALPHA_NUMERIC,
+//    ALPHA_NUMERIC_SPACE,
+//    ALPHA_NUMERIC_SPECIAL,
+//    CARD_NUMBER,
+//    TIME_HHMMSS,
+//    PROPRIETARY,
 
     UNNKOWN,
     TLV,

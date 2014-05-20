@@ -15,6 +15,8 @@
  */
 package eu.ttbox.nfcparser.utils;
 
+import java.nio.ByteBuffer;
+
 /**
  * A utility class mainly used for display of bytes to string and vice versa
  *
@@ -155,6 +157,16 @@ public class NumUtil {
      */
     public static int getUnsignedValue(byte b){
         return (int)(b & 0x00FF);
+    }
+
+    /**
+     * Converts a byte array of hex into an integer
+     *
+     * @param bytes
+     * @return integer representation of bytes
+     */
+    public static int getIntWith2Bytes(byte[] arr, int off) {
+        return arr[off]<<8 &0xFF00 | arr[off+1]&0xFF; 
     }
 
 
