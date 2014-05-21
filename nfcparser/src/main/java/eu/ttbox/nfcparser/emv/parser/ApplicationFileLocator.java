@@ -3,7 +3,9 @@ package eu.ttbox.nfcparser.emv.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
+import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.NumUtil;
@@ -49,13 +51,17 @@ public class ApplicationFileLocator {
         if (recv[0]!= ((byte)0X77)) {
             return false;
         }
-        byte[] fixedSizeOf2 = Arrays.copyOfRange(recv, 1, 3);
-        byte[] data = Arrays.copyOfRange(recv, 3, recv.length);
-        System.out.println("Fixed Size Of 2 : " + NumUtil.byte2Hex(fixedSizeOf2) + " / " + data.length);
-        System.out.println("Fixed Size Of 2 : " + NumUtil.getIntWith2Bytes(fixedSizeOf2, 0) + " / " + data.length);
+        this.featuresSupported  = Arrays.copyOfRange(recv, 1, 3);
+        byte[] data = Arrays.copyOfRange(recv, 3, recv.length); // TODO Cumpute Size
 
         System.out.println("Data  : " + NumUtil.byte2Hex(data));
-        return true;
+        EmvTLVParser parsed = new EmvTLVParser(data);
+        for (Map.Entry entry : parsed.entrySet()) {
+           System.out.println("keys : " + entry.getKey());
+        }
+        byte[] afls = parsed.getTlvValue(Emv41Enum.AFL);
+        return parseApplicationFileLocation(afls);
+
     }
 
 
@@ -70,20 +76,28 @@ public class ApplicationFileLocator {
         }
         int rawSize = raw.length;
         this.featuresSupported = Arrays.copyOfRange(raw, 0, 2); // CID
-        this.afls = Arrays.copyOfRange(raw, 2, rawSize); // ATC
-
+        byte[] afls = Arrays.copyOfRange(raw, 2, rawSize); // ATC
 
         // System.out.println( "features Supported = " +  NumUtil.toHexString(getAFL.featuresSupported));
         // System.out.println( "AFL = " +  NumUtil.toHexString(getAFL.afls));
-        int aflSize = this.afls.length;
+        return parseApplicationFileLocation(afls);
+
+    }
+
+    private boolean parseApplicationFileLocation(byte[] afls) {
+        if (afls==null) {
+            return false;
+        }
+        this.afls= afls;
+        int aflSize =  afls.length;
         // Check group 4 bytes
         if (aflSize % 4 != 0) {
-            throw new RuntimeException("AFL not in group of 4 : " + NumUtil.byte2Hex(this.afls));
+            throw new RuntimeException("AFL not in group of 4 : " + NumUtil.byte2Hex(afls));
         }
         // Split in group
         ArrayList<byte[]> aflGroups = new ArrayList<byte[]>();
         for (int i = 0; i < aflSize; i = i + 4) {
-            byte[] group = Arrays.copyOfRange(this.afls, i, i + 4);
+            byte[] group = Arrays.copyOfRange(afls, i, i + 4);
             aflGroups.add(group);
         }
         // Print Group
@@ -102,6 +116,7 @@ public class ApplicationFileLocator {
             this.records.add(record);
 
         }
+
         return true;
     }
 

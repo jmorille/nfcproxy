@@ -19,6 +19,8 @@ public enum Emv41Enum {
     BIC("5F54",  Emv41TypeEnum.TLV),
     IBAN("5F53",  Emv41TypeEnum.TLV),
 
+    AFL("94",  Emv41TypeEnum.UNNKOWN),
+
     Application_Primary_Account_Number_PAN("5A", Emv41TypeEnum.CN),
     Application_Expiration_Date("5F24", Emv41TypeEnum.YYMMDD),
     Application_Usage_Control("9F07", Emv41TypeEnum.UNNKOWN),

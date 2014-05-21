@@ -162,11 +162,11 @@ public class NumUtil {
     /**
      * Converts a byte array of hex into an integer
      *
-     * @param bytes
+     * @param arr bytes
      * @return integer representation of bytes
      */
     public static int getIntWith2Bytes(byte[] arr, int off) {
-        return arr[off]<<8 &0xFF00 | arr[off+1]&0xFF; 
+        return arr[off]<<8 &0xFF00 | arr[off+1]&0xFF;
     }
 
 

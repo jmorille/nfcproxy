@@ -290,7 +290,7 @@ public class EmvCardReader implements NfcReaderCallback {
         CardResponse card = transceive(isoDep, "80 A8 00 00 " + NumUtil.byte2Hex(lcDataLe));
        if (card.isSuccess()) {
             ApplicationFileLocator afl = new ApplicationFileLocator(card.getData());
-           readRecordAFL(isoDep, afl);
+            readRecordAFL(isoDep, afl);
        }
 
 
@@ -314,6 +314,8 @@ public class EmvCardReader implements NfcReaderCallback {
 
             if (card.isSuccess()) {
                 log(card);
+                EmvTLVParser parsed = new EmvTLVParser(card.getData());
+                log(parsed);
             }
 
         }
