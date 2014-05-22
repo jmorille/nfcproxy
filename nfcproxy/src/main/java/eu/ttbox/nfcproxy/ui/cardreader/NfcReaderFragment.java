@@ -234,6 +234,8 @@ public class NfcReaderFragment extends ListFragment implements LoyaltyCardReader
         nfc.enableForegroundDispatch(activity, nfcintent, null, nfctechfilter);
         // Status
         mStatusField.setText("Ready to read Nfc Tag...."  );
+
+
     }
 
 
