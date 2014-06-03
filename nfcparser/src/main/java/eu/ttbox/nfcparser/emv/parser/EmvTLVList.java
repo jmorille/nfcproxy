@@ -60,8 +60,7 @@ public class EmvTLVList {
             if (currentNode != null)
                 // Parent
                 currentNode.parentKey = parentKey;
-            // Search type
-            // TODO
+            // Search type 
             Emv41Enum emv = Emv41Enum.getByTag(currentNode.getTagIdAsInteger());
             if (emv == null) {
                 // Not found add
