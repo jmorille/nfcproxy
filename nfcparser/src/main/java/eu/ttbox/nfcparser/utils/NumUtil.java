@@ -19,10 +19,8 @@ import java.nio.ByteBuffer;
 
 /**
  * A utility class mainly used for display of bytes to string and vice versa
- *
  */
 public class NumUtil {
-
 
 
     // table to convert a nibble to a hex char.
@@ -52,13 +50,14 @@ public class NumUtil {
     /**
      * Convert a String (hexadecimal representation of a bytes) into a byte array.
      * Example: "112233AA", the returned byte[] will be: {0x11,0x22,0x33,0xAA}
+     *
      * @param s the String to convert
      * @return The String representation of the bytes
      */
-    public static byte[] hex2ByteNoSpace(String s){
+    public static byte[] hex2ByteNoSpace(String s) {
         s = s.toLowerCase();
 
-        if((s.length() % 2) != 0)
+        if ((s.length() % 2) != 0)
             s = "0" + s;
 
         byte[] b = new byte[s.length() / 2];
@@ -147,16 +146,39 @@ public class NumUtil {
 
 
     // ===========================================================
+    // Integer
+    // ===========================================================
+
+    public static byte[] intToBytes(int tagId) {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1).putInt(tagId);
+        byte[] bytes = byteBuffer.array();
+        return bytes;
+    }
+
+    public static int bytesToInt(byte[] bytes) {
+        int value = 0;
+
+        for (int i = 0; i < bytes.length; i++) {
+            value = value << 8;
+            value += bytes[i] & 0xff;
+        }
+
+        return value;
+    }
+
+    // ===========================================================
     // Other
     // ===========================================================
 
+
     /**
      * Get the unsigned value of a byte.
+     *
      * @param b
-     * @return  An unsigned integer of the value
+     * @return An unsigned integer of the value
      */
-    public static int getUnsignedValue(byte b){
-        return (int)(b & 0x00FF);
+    public static int getUnsignedValue(byte b) {
+        return (int) (b & 0x00FF);
     }
 
     /**
@@ -166,7 +188,7 @@ public class NumUtil {
      * @return integer representation of bytes
      */
     public static int getIntWith2Bytes(byte[] arr, int off) {
-        return arr[off]<<8 &0xFF00 | arr[off+1]&0xFF;
+        return arr[off] << 8 & 0xFF00 | arr[off + 1] & 0xFF;
     }
 
 

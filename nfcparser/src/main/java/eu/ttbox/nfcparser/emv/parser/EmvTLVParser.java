@@ -15,6 +15,7 @@ import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.NumUtil;
 
+@Deprecated
 public class EmvTLVParser {
 
 
@@ -56,7 +57,7 @@ public class EmvTLVParser {
     }
 
     public byte[] getTlvValue(Emv41Enum keyMap) {
-        return TLVParser.getTlvValue(parsed, keyMap.tag);
+        return TLVParser.getTlvValue(parsed, keyMap.getTagIdAsBytes() );
     }
 
     public byte[] getTlvValue(RecvTag keyMap) {

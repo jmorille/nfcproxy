@@ -7,6 +7,7 @@ import java.util.Collection;
 
 import eu.ttbox.nfcparser.utils.NumUtil;
 
+@Deprecated
 public class RecvTag {
 
     public final byte[] key;
