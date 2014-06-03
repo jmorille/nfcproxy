@@ -17,7 +17,7 @@ public class TagTLV {
     // Hierarchy
     public TagTLV parentKey;
 
-    private ArrayList<TagTLV> childKeys;
+    public ArrayList<TagTLV> childKeys;
 
 
     // ===========================================================

@@ -48,30 +48,30 @@ public class EmvTLVList {
         parseTLVListLInDept(buffer, null);
     }
 
-    private List<TagTLV> parseTLVListLInDept(byte[] buf, TagTLV parentKey) {
+    private ArrayList<TagTLV> parseTLVListLInDept(byte[] buf, TagTLV parentKey) {
         ByteBuffer buffer = ByteBuffer.wrap(buf, 0, buf.length);
         return parseTLVListLInDept(buffer, parentKey);
     }
 
-    private List<TagTLV> parseTLVListLInDept(ByteBuffer buffer, TagTLV parentKey) {
-        List<TagTLV> levelTags = new ArrayList<TagTLV>();
+    private ArrayList<TagTLV> parseTLVListLInDept(ByteBuffer buffer, TagTLV parentKey) {
+        ArrayList<TagTLV> levelTags = new ArrayList<TagTLV>();
         while (hasNext(buffer)) {
             TagTLV currentNode = getTLVMsg(buffer);    // null is returned if no tag found (trailing padding)
             if (currentNode != null)
                 // Parent
                 currentNode.parentKey = parentKey;
-            // Search type 
+            // Search type
             Emv41Enum emv = Emv41Enum.getByTag(currentNode.getTagIdAsInteger());
             if (emv == null) {
                 // Not found add
                 append(currentNode);
                 // System.out.println("Not found type : " +currentNode );
             } else {
-                System.out.println("Found type : " + emv);
+               // System.out.println("Found type : " + emv);
                 switch (emv.type) {
                     case TLV: {
-                        List<TagTLV> sub = parseTLVListLInDept(currentNode.tagValue, null);
-                        currentNode.addAllChildKey(sub);
+                        ArrayList<TagTLV> sub = parseTLVListLInDept(currentNode.tagValue, currentNode);
+                        currentNode.childKeys = sub;
                         // Save it
                         levelTags.add(currentNode);
                         append(currentNode);
