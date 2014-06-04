@@ -2,7 +2,7 @@ package eu.ttbox.nfcproxy.service.nfc.reader.emv41;
 
 
 import eu.ttbox.nfcparser.emv.Emv41Enum;
-import eu.ttbox.nfcparser.emv.parser.EmvTLVParser;
+import eu.ttbox.nfcparser.emv.parser.EmvTLVList;
 
 public class PseDirectory {
 
@@ -12,9 +12,9 @@ public class PseDirectory {
 
     public int fsi;
 
-    public final EmvTLVParser parsedRecv;
+    public final EmvTLVList parsedRecv;
 
-    public PseDirectory(EmvTLVParser parsedRecv) {
+    public PseDirectory(EmvTLVList parsedRecv) {
         this.parsedRecv = parsedRecv;
     }
 

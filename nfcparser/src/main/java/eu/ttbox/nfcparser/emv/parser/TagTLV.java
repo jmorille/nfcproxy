@@ -6,7 +6,7 @@ import java.util.Collection;
 
 import eu.ttbox.nfcparser.utils.NumUtil;
 
-public class TagTLV {
+public class TagTLV implements  ITag {
 
     public int tagId;
 
@@ -48,6 +48,8 @@ public class TagTLV {
     }
 
     public String getTagIdAsHexString() {
+        //  NumUtil.byte2Hex( ??
+        // NumUtil.byte2HexNoSpace(
         String hexVal = Integer.toHexString(tagId);
         return hexVal;
     }
@@ -56,6 +58,15 @@ public class TagTLV {
         return NumUtil.intToBytes(tagId);
     }
 
+
+    // ===========================================================
+    // Tag Value
+    // ===========================================================
+
+
+    public byte[] getTagValue() {
+        return tagValue;
+    }
 
     // ===========================================================
     // parent / Child

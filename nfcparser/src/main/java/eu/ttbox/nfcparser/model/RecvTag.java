@@ -5,10 +5,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
+import eu.ttbox.nfcparser.emv.parser.ITag;
 import eu.ttbox.nfcparser.utils.NumUtil;
 
 @Deprecated
-public class RecvTag {
+public class RecvTag implements ITag {
 
     public final byte[] key;
 
@@ -88,7 +89,10 @@ public class RecvTag {
         return  NumUtil.byte2HexNoSpace(key);
     }
 
-
+    @Override
+    public Integer getTagIdAsInteger() {
+        return NumUtil.bytesToInt(key);
+    }
 
     @Override
     public boolean equals(Object o) {
@@ -121,4 +125,6 @@ public class RecvTag {
                 ", valueSize=" + valueSize +
                 '}';
     }
+
+
 }
