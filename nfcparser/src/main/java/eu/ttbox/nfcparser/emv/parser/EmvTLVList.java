@@ -4,11 +4,18 @@ package eu.ttbox.nfcparser.emv.parser;
 import java.math.BigInteger;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import eu.ttbox.nfcparser.emv.Emv41Enum;
+import eu.ttbox.nfcparser.model.RecvTag;
+import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.ISOUtil;
+import eu.ttbox.nfcparser.utils.NumUtil;
 
 public class EmvTLVList {
 
@@ -29,6 +36,92 @@ public class EmvTLVList {
     public EmvTLVList(byte[] buf, int offset) {
         super();
         unpack(buf, offset);
+    }
+
+
+    // ===========================================================
+    // Accessors
+    // ===========================================================
+
+    public LinkedHashMap<Integer, TagTLV> getParsed() {
+        return mapTags;
+    }
+
+
+    // ===========================================================
+    // TLV Value Accessors
+    // ===========================================================
+
+    public byte[] getTlvValue(String key) {
+        TagTLV tag = getTlV(key);
+        return tag ==null? null: tag.tagValue;
+    }
+
+    public byte[] getTlvValue(byte[] key) {
+        TagTLV tag = getTlV(key);
+        return tag ==null? null: tag.tagValue;
+    }
+
+    public byte[] getTlvValue(ITag key) {
+        TagTLV tag = getTlV(key);
+        return tag ==null? null: tag.tagValue;
+    }
+
+    public byte[] getTlvValue(Integer key) {
+        TagTLV tag = getTlV(key);
+        return tag ==null? null: tag.tagValue;
+    }
+
+    // ===========================================================
+    // TLV Accessors
+    // ===========================================================
+
+    public TagTLV getTlV(String keyAsHexString) {
+        return getTlV(NumUtil.hex2Byte(keyAsHexString));
+    }
+
+
+    public TagTLV getTlV(byte[] key) {
+        return getTlV(NumUtil.bytesToInt(key));
+    }
+
+    public TagTLV getTlV(ITag key) {
+        return getTlV(key.getTagIdAsInteger());
+    }
+
+    public TagTLV getTlV(Integer key) {
+        return mapTags.get(key);
+    }
+
+    // ===========================================================
+    // Iterator
+    // ===========================================================
+
+    public boolean containsKey(Integer tagId) {
+        return mapTags.containsKey(tagId);
+    }
+    public boolean containsKey(TagTLV tag) {
+       return mapTags.containsKey(tag.getTagIdAsInteger());
+    }
+
+    public boolean containsKey(Emv41Enum tag) {
+        return mapTags.containsKey(tag.getTagIdAsInteger());
+    }
+
+
+    public List<TagTLV> getTags() {
+        return tags;
+    }
+
+    public LinkedHashMap<Integer, TagTLV> getMapTags() {
+        return mapTags;
+    }
+
+    public Set<Map.Entry<Integer, TagTLV>> getMapTagsEntrySet() {
+        return mapTags.entrySet();
+    }
+    public Collection<TagTLV>  getMapTagsEntryValues() {
+        return mapTags.values();
     }
 
 

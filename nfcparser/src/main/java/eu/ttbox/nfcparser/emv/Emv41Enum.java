@@ -3,6 +3,8 @@ package eu.ttbox.nfcparser.emv;
 
 import java.util.HashMap;
 
+import eu.ttbox.nfcparser.emv.parser.ITag;
+import eu.ttbox.nfcparser.emv.parser.TagTLV;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.utils.ISOUtil;
 import eu.ttbox.nfcparser.utils.NumUtil;
@@ -14,7 +16,7 @@ import eu.ttbox.nfcparser.utils.NumUtil;
  * EMV_v4.3_Book_3_Application_Specification_20120607062110791.pdf
  *   Table 33: Data Elements Dictionary
  */
-public enum Emv41Enum {
+public enum Emv41Enum  implements ITag {
 
     // TLV
     BIC(0x5F54,  Emv41TypeEnum.TLV),
@@ -57,7 +59,7 @@ public enum Emv41Enum {
     CARDHOLDER_NAME(0x5F20, Emv41TypeEnum.STRING);
 
 
-    public final int tagId;
+    public final Integer tagId;
 
     public final Emv41TypeEnum type;
 
@@ -70,6 +72,11 @@ public enum Emv41Enum {
 
     public byte[] getTagIdAsBytes() {
        return NumUtil.intToBytes(tagId);
+    }
+
+    @Override
+    public Integer getTagIdAsInteger() {
+        return tagId;
     }
 
     public String toString( byte[] value) {
@@ -93,6 +100,13 @@ public enum Emv41Enum {
 
     public static  Emv41Enum getByTag(Integer tagId) {
         return byTag.get(tagId);
+    }
+
+    public static  Emv41Enum getByTag(TagTLV tag) {
+        if (tag==null) {
+            return null;
+        }
+        return getByTag( tag.getTagIdAsInteger() );
     }
 
     @Deprecated

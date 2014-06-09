@@ -14,7 +14,9 @@ import java.util.Map;
 import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.emv.Emv41TypeEnum;
 import eu.ttbox.nfcparser.emv.generator.PdolGenerator;
-import eu.ttbox.nfcparser.emv.parser.EmvTLVParser;
+import eu.ttbox.nfcparser.emv.parser.EmvTLVList;
+import eu.ttbox.nfcparser.emv.parser.EmvTLVList;
+import eu.ttbox.nfcparser.emv.parser.TagTLV;
 import eu.ttbox.nfcparser.emv.status.Emv41SWLabel;
 import eu.ttbox.nfcparser.emv.status.Emv41SWLabelItem;
 import eu.ttbox.nfcparser.model.CardResponse;
@@ -134,7 +136,7 @@ public class EmvCardReader implements NfcReaderCallback {
 
         // Parse Pse Direcory
         // -------------------
-        EmvTLVParser parsedRecv = new EmvTLVParser(recv);
+        EmvTLVList parsedRecv = new EmvTLVList(recv);
         log(parsedRecv);
 
         // DF Name
@@ -220,7 +222,7 @@ public class EmvCardReader implements NfcReaderCallback {
             CardResponse card = transceive(isoDep, cmd);
 
             // TODO PayCardTLVParser
-            EmvTLVParser aidResponse = new EmvTLVParser(card);
+            EmvTLVList aidResponse = new EmvTLVList(card.getData());
             log(aidResponse);
 
             byte[] pdol = aidResponse.getTlvValue(Emv41Enum.PDOL);
@@ -251,7 +253,7 @@ public class EmvCardReader implements NfcReaderCallback {
                             log("    Read", "SFI " + sfi + " record #" + rec);
                             //log(tlv);
                             byte[] tlvData = tlv.getData();
-                            EmvTLVParser record = new EmvTLVParser(tlvData);
+                            EmvTLVList record = new EmvTLVList(tlvData);
                             log(record);
                         }
                     }
@@ -314,7 +316,7 @@ public class EmvCardReader implements NfcReaderCallback {
 
             if (card.isSuccess()) {
                 log(card);
-                EmvTLVParser parsed = new EmvTLVParser(card.getData());
+                EmvTLVList parsed = new EmvTLVList(card.getData());
                 log(parsed);
             }
 
@@ -390,10 +392,10 @@ public class EmvCardReader implements NfcReaderCallback {
     }
 
 
-    private void log(EmvTLVParser parsedRecv) {
-        for (Map.Entry<RecvTag, byte[]> entry : parsedRecv.entrySet()) {
-            RecvTag tag = entry.getKey();
-            byte[] tagValue = entry.getValue();
+    private void log(EmvTLVList parsedRecv) {
+        for (Map.Entry<Integer,TagTLV> entry : parsedRecv.getMapTagsEntrySet()) {
+            TagTLV tag = entry.getValue();
+            byte[] tagValue = tag.getTagValue();
             // Search Label
             Emv41Enum emv = Emv41Enum.getByTag(tag);
             String keyLabel;
@@ -402,7 +404,7 @@ public class EmvCardReader implements NfcReaderCallback {
                 keyLabel = tag.toString();
                 valueLabel = Emv41TypeEnum.UNNKOWN.toString(tagValue);
             } else {
-                keyLabel = emv.name() + "(" + NumUtil.byte2HexNoSpace(tag.key) + ")";
+                keyLabel = emv.name() + "(" + tag.getTagIdAsHexString()  + ")";
                 valueLabel = emv.toString(tagValue);
             }
             log("  ", keyLabel);

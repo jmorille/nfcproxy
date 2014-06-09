@@ -55,10 +55,10 @@ public class ApplicationFileLocator {
         byte[] data = Arrays.copyOfRange(recv, 3, recv.length); // TODO Cumpute Size
 
         System.out.println("Data  : " + NumUtil.byte2Hex(data));
-        EmvTLVParser parsed = new EmvTLVParser(data);
-        for (Map.Entry entry : parsed.entrySet()) {
-           System.out.println("keys : " + entry.getKey());
-        }
+        EmvTLVList parsed = new EmvTLVList(data);
+//        for (Map.Entry entry : parsed.entrySet()) {
+//           System.out.println("keys : " + entry.getKey());
+//        }
         byte[] afls = parsed.getTlvValue(Emv41Enum.AFL);
         return parseApplicationFileLocation(afls);
 

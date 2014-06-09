@@ -12,11 +12,11 @@ import java.util.Map;
 
 import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.emv.Emv41TypeEnum;
-import eu.ttbox.nfcparser.emv.parser.EmvTLVParser;
+import eu.ttbox.nfcparser.emv.parser.EmvTLVList;
+import eu.ttbox.nfcparser.emv.parser.TagTLV;
 import eu.ttbox.nfcparser.emv.status.Emv41SWLabel;
 import eu.ttbox.nfcparser.emv.status.Emv41SWLabelItem;
 import eu.ttbox.nfcparser.model.CardResponse;
-import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.model.StatusWord;
 import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.AscciHelper;
@@ -103,7 +103,7 @@ public class NavigoCardReader implements NfcReaderCallback {
      * @return
      * @throws java.io.IOException
      */
-    private EmvTLVParser selectPseDirectory(IsoDep isoDep, String fileName) throws IOException {
+    private EmvTLVList selectPseDirectory(IsoDep isoDep, String fileName) throws IOException {
         // [Step 1] Select 1PAY.SYS.DDF01 to get the PSE directory
         log("[Step 1]", "Select " + fileName + " to get the PSE directory");
 
@@ -123,7 +123,7 @@ public class NavigoCardReader implements NfcReaderCallback {
 
         // Parse Pse Direcory
         // -------------------
-        EmvTLVParser parsedRecv = new EmvTLVParser(recv);
+        EmvTLVList parsedRecv = new EmvTLVList(recv);
         log(parsedRecv);
 
 //        log("[Step 1] END");
@@ -193,10 +193,10 @@ public class NavigoCardReader implements NfcReaderCallback {
     }
 
 
-    private void log(EmvTLVParser parsedRecv) {
-        for (Map.Entry<RecvTag, byte[]> entry : parsedRecv.entrySet()) {
-            RecvTag tag = entry.getKey();
-            byte[] tagValue = entry.getValue();
+    private void log(EmvTLVList parsedRecv) {
+        for (Map.Entry<Integer, TagTLV> entry : parsedRecv.getMapTagsEntrySet()) {
+            TagTLV tag = entry.getValue();
+            byte[] tagValue = tag.getTagValue();
             // Search Label
             Emv41Enum emv = Emv41Enum.getByTag(tag);
             String keyLabel;
@@ -205,7 +205,7 @@ public class NavigoCardReader implements NfcReaderCallback {
                 keyLabel = tag.toString();
                 valueLabel = Emv41TypeEnum.UNNKOWN.toString(tagValue);
             } else {
-                keyLabel = emv.name() + "(" + NumUtil.byte2HexNoSpace(tag.key) + ")";
+                keyLabel = emv.name() + "(" +  tag.getTagIdAsHexString() + ")";
                 valueLabel = emv.toString(tagValue);
             }
             log("  ", keyLabel);
