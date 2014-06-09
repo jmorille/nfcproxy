@@ -10,6 +10,11 @@
     <string name="action_example">Example action</string>
     <string name="action_settings">Settings</string>
 
+    <string name="unknown_device">Device Inconnu</string>
+
+    <string name="menu_bluetooth_scan">Scan Bluetooth</string>
+    <string name="menu_bluetooth_stop">Stop Bluetooth</string>
+
     <string name="action_nfc_console_clear">Clear</string>
 
 </resources>
