@@ -9,6 +9,8 @@ public class VersionUtils {
     public static boolean isHc11 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     public static boolean isIcs14 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH;
     public static boolean isJb16 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
+    public static boolean isJb18 = Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2;
+
 
     public static class AndroidPermissions {
         public static final String READ_CONTACTS = "android.permission.READ_CONTACTS";
