@@ -21,6 +21,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import java.util.Set;
+
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.ui.MainActivity;
 
@@ -152,9 +154,21 @@ public class BluetoothScanFragment extends Fragment {
         // Initializes list view adapter.
         mLeDeviceListAdapter = new BluetoothDeviceListAdapter(getActivity());
         newDevicesListView.setAdapter(mLeDeviceListAdapter);
+        addBondedDevices();
         scanLeDevice(true);
     }
 
+    private void addBondedDevices() {
+        Set<BluetoothDevice> pairedDevices = mBluetoothAdapter.getBondedDevices();
+       // If there are paired devices
+        if (pairedDevices.size() > 0) {
+            // Loop through paired devices
+            for (BluetoothDevice device : pairedDevices) {
+                // Add the name and address to an array adapter to show in a ListView
+                mLeDeviceListAdapter.add(device);
+            }
+        }
+    }
 
     @Override
     public void onPause() {
