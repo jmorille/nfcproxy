@@ -1,12 +1,11 @@
 package eu.ttbox.nfcproxy.ui.proxy;
 
 
+import android.nfc.Tag;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-
-import android.nfc.Tag;
-import android.nfc.tech.TagTechnology;
 
 //TODO: HACK since BasicTagTechnology is not currently visible from SDK. primiarly want the transceive() method (otherwise we could just use TagTechnology)
 //TODO: Just access BasicTagTechnolgy directly but modifying platform library android.jar. (use library with hidden classes from framework.jar)

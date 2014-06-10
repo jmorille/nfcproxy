@@ -1,12 +1,15 @@
 package eu.ttbox.nfcparser.utils;
 
 
-
-
 import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.BitSet;
+import java.util.List;
+import java.util.Random;
+import java.util.StringTokenizer;
 
 
 public class ISOUtil {

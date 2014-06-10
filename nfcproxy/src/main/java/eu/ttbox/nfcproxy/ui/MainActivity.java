@@ -1,23 +1,23 @@
 package eu.ttbox.nfcproxy.ui;
 
-import android.app.Activity;
-
 import android.app.ActionBar;
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
 
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.ui.cardreader.NfcReaderFragment;
+import eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanFragment;
 import eu.ttbox.nfcproxy.ui.nav.NavigationDrawerFragment;
 import eu.ttbox.nfcproxy.ui.prefs.SettingsActivity;
 import eu.ttbox.nfcproxy.ui.readernfc.NfcReplayFragment;
@@ -77,12 +77,11 @@ public class MainActivity extends Activity
             case 0:
                 toReplaceFragment =  NfcReaderFragment.newInstance(position + 1);
                 break;
-            case 2:
+            case 1:
                 toReplaceFragment =   NfcReplayFragment.newInstance(position + 1);
                 break;
-            case 3:
-                toReplaceFragment= PlaceholderFragment.newInstance(position + 1);
-
+            case 2:
+                toReplaceFragment= BluetoothScanFragment.newInstance(position + 1);
                 break;
             default:
                 toReplaceFragment= PlaceholderFragment.newInstance(position + 1);

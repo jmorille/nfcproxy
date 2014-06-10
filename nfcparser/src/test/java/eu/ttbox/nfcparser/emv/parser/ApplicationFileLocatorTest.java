@@ -3,13 +3,10 @@ package eu.ttbox.nfcparser.emv.parser;
 import org.junit.Assert;
 import org.junit.Test;
 
+import eu.ttbox.nfcparser.emv.parser.ApplicationFileLocator.AflRecord;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.NumUtil;
-
-import static org.junit.Assert.*;
-
-import eu.ttbox.nfcparser.emv.parser.ApplicationFileLocator.AflRecord;
 public class ApplicationFileLocatorTest {
 
     @Test

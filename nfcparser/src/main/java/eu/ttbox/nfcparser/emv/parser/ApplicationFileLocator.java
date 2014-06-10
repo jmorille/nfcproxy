@@ -3,7 +3,6 @@ package eu.ttbox.nfcparser.emv.parser;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Map;
 
 import eu.ttbox.nfcparser.emv.Emv41Enum;
 import eu.ttbox.nfcparser.model.RecvTag;

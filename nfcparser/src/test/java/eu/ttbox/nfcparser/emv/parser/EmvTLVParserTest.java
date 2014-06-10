@@ -3,12 +3,9 @@ package eu.ttbox.nfcparser.emv.parser;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import eu.ttbox.nfcparser.emv.Emv41Enum;
-import eu.ttbox.nfcparser.model.RecvTag;
-import eu.ttbox.nfcparser.parser.TLVParser;
 import eu.ttbox.nfcparser.utils.NumUtil;
 
 public class EmvTLVParserTest {

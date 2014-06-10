@@ -16,9 +16,10 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.text.TextUtils;
-import eu.ttbox.nfcproxy.R;
 
 import java.util.List;
+
+import eu.ttbox.nfcproxy.R;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On

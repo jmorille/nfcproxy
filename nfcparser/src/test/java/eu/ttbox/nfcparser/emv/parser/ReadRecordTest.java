@@ -1,12 +1,9 @@
 package eu.ttbox.nfcparser.emv.parser;
 
 import org.jpos.iso.ISOException;
-import org.jpos.tlv.TLVList;
-import org.jpos.tlv.TLVMsg;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 

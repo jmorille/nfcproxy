@@ -11,7 +11,6 @@ import java.util.Map;
 import eu.ttbox.nfcparser.model.RecvTag;
 import eu.ttbox.nfcparser.utils.AscciHelper;
 import eu.ttbox.nfcparser.utils.NumUtil;
-import eu.ttbox.nfcparser.utils.NumUtil;
 
 import static org.junit.Assert.assertEquals;
 

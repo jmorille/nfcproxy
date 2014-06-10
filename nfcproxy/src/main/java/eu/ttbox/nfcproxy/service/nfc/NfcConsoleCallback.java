@@ -1,8 +1,6 @@
 package eu.ttbox.nfcproxy.service.nfc;
 
 
-import android.nfc.Tag;
-
 public interface NfcConsoleCallback {
 
     void onTagDiscovered(byte[] tagId);

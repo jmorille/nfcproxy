@@ -15,9 +15,9 @@ import android.util.Log;
 import java.util.HashMap;
 
 import eu.ttbox.nfcproxy.NfcProxyApplication;
+import eu.ttbox.nfcproxy.domain.core.DbSelection;
 import eu.ttbox.nfcproxy.domain.db.NfcProxyDbOpenHelper;
 import eu.ttbox.nfcproxy.domain.db.NfcProxyDbOpenHelper.ReplayColumns;
-import eu.ttbox.nfcproxy.domain.core.DbSelection;
 
 
 public class ReplayProvider extends ContentProvider {

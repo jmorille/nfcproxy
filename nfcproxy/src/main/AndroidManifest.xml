@@ -31,6 +31,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name="eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanActivity">
+
+
+        </activity>
+
+
         <!-- Database -->
         <provider
             android:name="eu.ttbox.nfcproxy.domain.ReplayProvider"
