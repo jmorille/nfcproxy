@@ -1,11 +1,13 @@
 package eu.ttbox.nfcproxy.ui.connect.bluetooth;
 
 
+import android.app.Fragment;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
 import java.io.IOException;
@@ -14,8 +16,9 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 import eu.ttbox.nfcproxy.ui.connect.RemoteChatCallback;
+import eu.ttbox.nfcproxy.ui.connect.RemoteChatService;
 
-public class BluetoothChatService {
+public class BluetoothChatService implements RemoteChatService {
 
     // Debugging
     private static final String TAG = "BluetoothChatService";
@@ -54,6 +57,19 @@ public class BluetoothChatService {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = RemoteChatCallback.STATE_NONE;
         mBluetoothChatCallback = bluetoothChatCallback;
+    }
+
+    public boolean isEnableAdapter() {
+        return mAdapter.isEnabled();
+    }
+    public boolean isEnableAdapter(Fragment fragment, int requestCode) {
+        boolean isEnable = mAdapter.isEnabled();
+        if (!isEnable) {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            fragment.startActivityForResult(enableIntent, requestCode);
+            // Otherwise, setup the chat session
+        }
+        return isEnable;
     }
 
     /**
@@ -111,6 +127,11 @@ public class BluetoothChatService {
         }
     }
 
+    @Override
+    public void connectByAddress(String deviceAddress, boolean secure) {
+        BluetoothDevice device = mAdapter.getRemoteDevice(deviceAddress);
+        connect(device, secure);
+    }
     /**
      * Start the ConnectThread to initiate a connection to a remote device.
      *

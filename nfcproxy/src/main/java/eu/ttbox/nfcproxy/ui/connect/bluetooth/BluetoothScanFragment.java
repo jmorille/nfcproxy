@@ -25,6 +25,7 @@ import java.util.Set;
 
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.ui.MainActivity;
+import eu.ttbox.nfcproxy.ui.connect.RemoteChatService;
 import eu.ttbox.nfcproxy.ui.connect.bluetooth.adapter.BluetoothDeviceListAdapter;
 
 public class BluetoothScanFragment extends Fragment {
@@ -32,8 +33,6 @@ public class BluetoothScanFragment extends Fragment {
     private static final String TAG = "BluetoothConnectFragment";
 
 
-    public static final String EXTRAS_DEVICE_NAME = "EXTRAS_DEVICE_NAME";
-    public static final String EXTRAS_DEVICE_ADDRESS = "EXTRAS_DEVICE_ADDRESS";
 
 
     private static final int REQUEST_ENABLE_BT = 1;
@@ -320,8 +319,8 @@ public class BluetoothScanFragment extends Fragment {
             final BluetoothDevice device = mLeDeviceListAdapter.getItem(position);
             if (device == null) return;
             final Intent intent = new Intent();
-            intent.putExtra(EXTRAS_DEVICE_NAME, device.getName());
-            intent.putExtra(EXTRAS_DEVICE_ADDRESS, device.getAddress());
+            intent.putExtra(RemoteChatService.EXTRAS_DEVICE_NAME, device.getName());
+            intent.putExtra(RemoteChatService.EXTRAS_DEVICE_ADDRESS, device.getAddress());
             if (mScanning) {
                 scanLeDevice(false);
             }

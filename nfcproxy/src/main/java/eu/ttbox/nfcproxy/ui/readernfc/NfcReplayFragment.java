@@ -73,8 +73,7 @@ public class NfcReplayFragment extends ListFragment {
 
         // Adapter
         consoleNfc = new NfcConsoleArrayAdapter(getActivity());
-// new ArrayAdapter<DummyContent.DummyItem>(getActivity(),  android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS)
-        // TODO: Change Adapter to display your content
+         // TODO: Change Adapter to display your content
         setListAdapter(consoleNfc);//  View v = inflater.inflate(R.layout.fragment_cardreader, container, false);
     }
 

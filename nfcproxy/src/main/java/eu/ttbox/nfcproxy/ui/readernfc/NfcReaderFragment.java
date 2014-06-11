@@ -1,4 +1,4 @@
-package eu.ttbox.nfcproxy.ui.cardreader;
+package eu.ttbox.nfcproxy.ui.readernfc;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -56,7 +56,7 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
 
     // Binding
     private TextView mStatusField;
-    private ListView consoleListView;
+    private ListView consoleLogListView;
 
     // ===========================================================
     // Static
@@ -111,14 +111,14 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_cardreader, container, false);
 
+        // Binding
         mStatusField = (TextView) v.findViewById(R.id.card_account_field);
         mStatusField.setText("Waiting...");
 
-        // Listview
-        consoleListView = (ListView) v.findViewById(R.id.nfc_log_console);
-
+        // Console Listview
+        consoleLogListView = (ListView) v.findViewById(R.id.nfc_log_console);
         consoleNfc = new NfcConsoleArrayAdapter(getActivity());
-        consoleListView.setAdapter(consoleNfc);
+        consoleLogListView.setAdapter(consoleNfc);
 
 
         // Reader
@@ -184,6 +184,8 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
     }
 
 
+
+
     // ===========================================================
     // Dialog Service
     // ===========================================================
@@ -196,32 +198,6 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
             startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
         }
     }
-
-
-    // ===========================================================
-    // Nfc UnRegister Service
-    // ===========================================================
-
-
-    private void disableReaderMode() {
-        Log.i(TAG, "Disabling reader mode");
-        Activity activity = getActivity();
-        NfcAdapter nfc = NfcAdapter.getDefaultAdapter(activity);
-        // KitKat : nfc.disableReaderMode(activity);
-        disableReaderMode(activity, nfc);
-
-    }
-
-    private void disableReaderMode(Activity activity, NfcAdapter nfc) {
-        if (nfc != null) {
-            nfc.disableForegroundDispatch(activity);
-        }
-        if (nfcReceiver != null) {
-            activity.unregisterReceiver(nfcReceiver);
-        }
-        mStatusField.setText("");
-    }
-
 
     // ===========================================================
     // Nfc Register Service
@@ -263,6 +239,29 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
 
     }
 
+    // ===========================================================
+    // Nfc UnRegister Service
+    // ===========================================================
+
+
+    private void disableReaderMode() {
+        Log.i(TAG, "Disabling reader mode");
+        Activity activity = getActivity();
+        NfcAdapter nfc = NfcAdapter.getDefaultAdapter(activity);
+        // KitKat : nfc.disableReaderMode(activity);
+        disableReaderMode(activity, nfc);
+
+    }
+
+    private void disableReaderMode(Activity activity, NfcAdapter nfc) {
+        if (nfc != null) {
+            nfc.disableForegroundDispatch(activity);
+        }
+        if (nfcReceiver != null) {
+            activity.unregisterReceiver(nfcReceiver);
+        }
+        mStatusField.setText("");
+    }
 
     // ===========================================================
     // Service Callback
@@ -288,6 +287,8 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
         public void onConsoleLog(String key, String value) {
             consoleNfc.add(new NfcConsoleLine(key, value));
         }
+
+
     };
 
     @Override

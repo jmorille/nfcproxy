@@ -14,11 +14,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.SpinnerAdapter;
 
 import eu.ttbox.nfcproxy.R;
-import eu.ttbox.nfcproxy.ui.cardreader.NfcReaderFragment;
+import eu.ttbox.nfcproxy.ui.proxy.NfcProxyFragment;
+import eu.ttbox.nfcproxy.ui.readernfc.NfcReaderFragment;
 import eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanFragment;
 import eu.ttbox.nfcproxy.ui.nav.NavigationDrawerFragment;
 import eu.ttbox.nfcproxy.ui.prefs.SettingsActivity;
@@ -84,7 +83,7 @@ public class MainActivity extends Activity
                 toReplaceFragment =   NfcReplayFragment.newInstance(position + 1);
                 break;
             case 2:
-                toReplaceFragment= BluetoothScanFragment.newInstance(position + 1);
+                toReplaceFragment= NfcProxyFragment.newInstance(position + 1);
                 break;
             default:
                 toReplaceFragment= PlaceholderFragment.newInstance(position + 1);
