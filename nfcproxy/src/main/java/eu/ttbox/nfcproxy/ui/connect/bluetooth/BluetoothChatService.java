@@ -139,7 +139,7 @@ public class BluetoothChatService implements RemoteChatService {
      * @param secure Socket Security type - Secure (true) , Insecure (false)
      */
     public synchronized void connect(BluetoothDevice device, boolean secure) {
-        if (D) Log.d(TAG, "connect to: " + device);
+        if (D) Log.d(TAG, "Try connecting to: " + device);
 
         // Cancel any thread attempting to make a connection
         if (mState == RemoteChatCallback.STATE_CONNECTING) {

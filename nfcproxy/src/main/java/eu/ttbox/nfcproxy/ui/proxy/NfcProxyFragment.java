@@ -24,6 +24,7 @@ import eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothChatService;
 import eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanActivity;
 import eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanFragment;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
+import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
 
 public class NfcProxyFragment extends Fragment {
 
@@ -92,8 +93,21 @@ public class NfcProxyFragment extends Fragment {
     }
 
     // ===========================================================
+    // Console Log
+    // ===========================================================
+
+    private void setStatusField(String statusText) {
+        mStatusField.setText(statusText);
+    }
+
+    private void logNfcConsole(String key, String value) {
+        consoleNfc.add(new NfcConsoleLine(key, value));
+    }
+
+    // ===========================================================
     // Menu
     // ===========================================================
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.bluetooth, menu);
@@ -108,6 +122,7 @@ public class NfcProxyFragment extends Fragment {
                 return true;
             case R.id.menu_bluetooth_scan :
                 scanBluetoothDevices(false);
+                logNfcConsole("menu", "Scan");
                 return true;
             default:
                 break;
@@ -223,31 +238,52 @@ public class NfcProxyFragment extends Fragment {
     private RemoteChatCallback bluetoothChatCallback = new RemoteChatCallback() {
         @Override
         public void setState(int state) {
+            String stateLabel = "??";
+            switch (state) {
+                case  RemoteChatCallback.STATE_NONE:
+                    stateLabel = "STATE_NONE";
+                    break;
+                case  RemoteChatCallback.STATE_LISTEN:
+                    stateLabel = "STATE_LISTEN";
+                    break;
+                case  RemoteChatCallback.STATE_CONNECTING:
+                    stateLabel = "STATE_CONNECTING";
+                    break;
+                case  RemoteChatCallback.STATE_CONNECTED:
+                    stateLabel = "STATE_CONNECTED";
+                    break;
+                default:
+                    stateLabel = "" + state;
+                    break;
 
+            }
+            logNfcConsole("state", stateLabel);
         }
 
         @Override
         public void connected(String deviceName) {
-
+            logNfcConsole("connected", deviceName);
+            mChatService.write("COucou".getBytes());
         }
 
         @Override
         public void connectionFailed() {
-
+            logNfcConsole("connectionFailed", "");
         }
 
         @Override
         public void connectionLost() {
-
+            logNfcConsole("connectionLost", "");
         }
 
         @Override
         public void write(byte[] buffer) {
-
+            logNfcConsole("write", new String(buffer));
         }
 
         @Override
         public int read(int byteCount, byte[] buffer) {
+            logNfcConsole("read", new String(buffer));
             return 0;
         }
     };
@@ -271,6 +307,7 @@ public class NfcProxyFragment extends Fragment {
                 .getString(RemoteChatService.EXTRAS_DEVICE_ADDRESS);
         // Attempt to connect to the device
         mChatService.connectByAddress(address, secure);
+        logNfcConsole("connectByAddress", address);
     }
 
 
