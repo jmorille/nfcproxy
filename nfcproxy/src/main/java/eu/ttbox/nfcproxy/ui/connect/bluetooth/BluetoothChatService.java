@@ -6,13 +6,14 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
+
+import eu.ttbox.nfcproxy.ui.connect.RemoteChatCallback;
 
 public class BluetoothChatService {
 
@@ -40,47 +41,8 @@ public class BluetoothChatService {
     private int mState;
 
 
-    private BluetoothChatCallback mBluetoothChatCallback;
+    private RemoteChatCallback mBluetoothChatCallback;
 
-    public interface BluetoothChatCallback {
-        // Constants that indicate the current connection state
-        public static final int STATE_NONE = 0;       // we're doing nothing
-        public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-        public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-        public static final int STATE_CONNECTED = 3;  // now connected to a remote device
-
-        /**
-         * Set the current state of the chat connection
-         *
-         * @param state An integer defining the current connection state
-         */
-        void setState(int state);
-
-        /**
-         * Start the ConnectedThread to begin managing a Bluetooth connection
-         *
-         * @param device The BluetoothDevice that has been connected
-         */
-        void connected(BluetoothDevice device);
-
-        void connectionFailed();
-
-        /**
-         * Indicate that the connection was lost and notify the UI Activity.
-         */
-         void connectionLost();
-
-
-        /**
-         * Write to the connected OutStream.
-         *
-         * @param buffer The bytes to write
-         */
-        void write(byte[] buffer);
-
-        int read(int byteCount, byte[] buffer);
-
-    }
 
     /**
      * Constructor. Prepares a new BluetoothChat session.
@@ -88,9 +50,9 @@ public class BluetoothChatService {
      * @param context The UI Activity Context
      * @param bluetoothChatCallback A Handler to send messages back to the UI Activity
      */
-    public BluetoothChatService(Context context, BluetoothChatCallback bluetoothChatCallback) {
+    public BluetoothChatService(Context context, RemoteChatCallback bluetoothChatCallback) {
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        mState = BluetoothChatCallback.STATE_NONE;
+        mState = RemoteChatCallback.STATE_NONE;
         mBluetoothChatCallback = bluetoothChatCallback;
     }
 
@@ -136,7 +98,7 @@ public class BluetoothChatService {
             mConnectedThread = null;
         }
 
-        setState(BluetoothChatCallback.STATE_LISTEN);
+        setState(RemoteChatCallback.STATE_LISTEN);
 
         // Start the thread to listen on a BluetoothServerSocket
         if (mSecureAcceptThread == null) {
@@ -159,7 +121,7 @@ public class BluetoothChatService {
         if (D) Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
-        if (mState == BluetoothChatCallback.STATE_CONNECTING) {
+        if (mState == RemoteChatCallback.STATE_CONNECTING) {
             if (mConnectThread != null) {
                 mConnectThread.cancel();
                 mConnectThread = null;
@@ -175,7 +137,7 @@ public class BluetoothChatService {
         // Start the thread to connect with the given device
         mConnectThread = new ConnectThread(device, secure);
         mConnectThread.start();
-        setState(BluetoothChatCallback.STATE_CONNECTING);
+        setState(RemoteChatCallback.STATE_CONNECTING);
     }
 
     /**
@@ -221,9 +183,9 @@ public class BluetoothChatService {
 //        msg.setData(bundle);
 //        mHandler.sendMessage(msg);
         if (mBluetoothChatCallback!=null) {
-            mBluetoothChatCallback.connected(device);
+            mBluetoothChatCallback.connected(device.getName());
         }
-        setState(BluetoothChatCallback.STATE_CONNECTED);
+        setState(RemoteChatCallback.STATE_CONNECTED);
     }
 
     /**
@@ -251,7 +213,7 @@ public class BluetoothChatService {
             mInsecureAcceptThread.cancel();
             mInsecureAcceptThread = null;
         }
-        setState(BluetoothChatCallback.STATE_NONE);
+        setState(RemoteChatCallback.STATE_NONE);
     }
 
     /**
@@ -265,7 +227,7 @@ public class BluetoothChatService {
         ConnectedThread r;
         // Synchronize a copy of the ConnectedThread
         synchronized (this) {
-            if (mState != BluetoothChatCallback.STATE_CONNECTED) return;
+            if (mState != RemoteChatCallback.STATE_CONNECTED) return;
             r = mConnectedThread;
         }
         // Perform the write unsynchronized
@@ -347,7 +309,7 @@ public class BluetoothChatService {
             BluetoothSocket socket = null;
 
             // Listen to the server socket if we're not connected
-            while (mState != BluetoothChatCallback.STATE_CONNECTED) {
+            while (mState != RemoteChatCallback.STATE_CONNECTED) {
                 try {
                     // This is a blocking call and will only return on a
                     // successful connection or an exception
@@ -361,14 +323,14 @@ public class BluetoothChatService {
                 if (socket != null) {
                     synchronized (BluetoothChatService.this) {
                         switch (mState) {
-                            case BluetoothChatCallback.STATE_LISTEN:
-                            case BluetoothChatCallback.STATE_CONNECTING:
+                            case RemoteChatCallback.STATE_LISTEN:
+                            case RemoteChatCallback.STATE_CONNECTING:
                                 // Situation normal. Start the connected thread.
                                 connected(socket, socket.getRemoteDevice(),
                                         mSocketType);
                                 break;
-                            case BluetoothChatCallback.STATE_NONE:
-                            case BluetoothChatCallback.STATE_CONNECTED:
+                            case RemoteChatCallback.STATE_NONE:
+                            case RemoteChatCallback.STATE_CONNECTED:
                                 // Either not ready or already connected. Terminate new socket.
                                 try {
                                     socket.close();

@@ -25,6 +25,7 @@ import java.util.Set;
 
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.ui.MainActivity;
+import eu.ttbox.nfcproxy.ui.connect.bluetooth.adapter.BluetoothDeviceListAdapter;
 
 public class BluetoothScanFragment extends Fragment {
 
@@ -234,27 +235,6 @@ public class BluetoothScanFragment extends Fragment {
 
 
     // ===========================================================
-    // Bluetooth Select
-    // ===========================================================
-    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
-
-        @Override
-        public void onItemClick(AdapterView<?> av, View v, int position, long id) {
-            final BluetoothDevice device = mLeDeviceListAdapter.getItem(position);
-            if (device == null) return;
-            final Intent intent = new Intent();
-            intent.putExtra(EXTRAS_DEVICE_NAME, device.getName());
-            intent.putExtra(EXTRAS_DEVICE_ADDRESS, device.getAddress());
-            if (mScanning) {
-                scanLeDevice(false);
-            }
-//        startActivity(intent);
-           getActivity().setResult(Activity.RESULT_OK, intent);
-           getActivity().finish();
-        }
-
-    };
-    // ===========================================================
     // Bluetooth Search
     // ===========================================================
 
@@ -262,12 +242,18 @@ public class BluetoothScanFragment extends Fragment {
     private void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
+
             mHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    mScanning = false;
-                    mBluetoothAdapter.cancelDiscovery();
-                    getActivity().invalidateOptionsMenu();
+                    if (mScanning) {
+                        mScanning = false;
+                        mBluetoothAdapter.cancelDiscovery();
+                        final Activity activity = getActivity();
+                        if (activity != null) {
+                            activity.invalidateOptionsMenu();
+                        }
+                    }
                 }
             }, SCAN_PERIOD);
 
@@ -322,6 +308,29 @@ public class BluetoothScanFragment extends Fragment {
         }
     };
 
+
+    // ===========================================================
+    // Bluetooth Select
+    // ===========================================================
+
+    private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {
+
+        @Override
+        public void onItemClick(AdapterView<?> av, View v, int position, long id) {
+            final BluetoothDevice device = mLeDeviceListAdapter.getItem(position);
+            if (device == null) return;
+            final Intent intent = new Intent();
+            intent.putExtra(EXTRAS_DEVICE_NAME, device.getName());
+            intent.putExtra(EXTRAS_DEVICE_ADDRESS, device.getAddress());
+            if (mScanning) {
+                scanLeDevice(false);
+            }
+//        startActivity(intent);
+            getActivity().setResult(Activity.RESULT_OK, intent);
+            getActivity().finish();
+        }
+
+    };
 
     // ===========================================================
     // Other

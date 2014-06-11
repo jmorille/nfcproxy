@@ -14,6 +14,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.SpinnerAdapter;
 
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.ui.cardreader.NfcReaderFragment;
@@ -61,6 +63,7 @@ public class MainActivity extends Activity
         mNavigationDrawerFragment.setUp(
                 R.id.navigation_drawer,
                 (DrawerLayout) findViewById(R.id.drawer_layout));
+
     }
 
 

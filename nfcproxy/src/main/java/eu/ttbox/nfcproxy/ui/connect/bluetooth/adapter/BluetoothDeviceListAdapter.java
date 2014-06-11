@@ -1,4 +1,4 @@
-package eu.ttbox.nfcproxy.ui.connect.bluetooth;
+package eu.ttbox.nfcproxy.ui.connect.bluetooth.adapter;
 
 
 import android.bluetooth.BluetoothDevice;

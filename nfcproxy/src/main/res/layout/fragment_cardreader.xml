@@ -17,9 +17,9 @@
 
 
     <ListView
+        android:id="@+id/nfc_log_console"
         android:layout_width="wrap_content"
         android:layout_height="0dp"
-        android:id="@android:id/list"
         android:layout_weight="1"
         tools:listitem="@layout/adaptor_nfc_console_item" />
 

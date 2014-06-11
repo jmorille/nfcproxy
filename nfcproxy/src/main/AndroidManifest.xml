@@ -32,7 +32,9 @@
         </activity>
 
         <activity
-            android:name="eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanActivity">
+            android:name="eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanActivity"
+            android:theme="@android:style/Theme.Holo.Dialog"
+            android:configChanges="orientation|keyboardHidden">
 
 
         </activity>

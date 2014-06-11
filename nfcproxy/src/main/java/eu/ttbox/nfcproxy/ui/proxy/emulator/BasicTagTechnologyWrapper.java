@@ -1,4 +1,4 @@
-package eu.ttbox.nfcproxy.ui.proxy;
+package eu.ttbox.nfcproxy.ui.proxy.emulator;
 
 
 import android.nfc.Tag;
