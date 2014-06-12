@@ -100,8 +100,14 @@ public class NfcProxyFragment extends Fragment {
         mStatusField.setText(statusText);
     }
 
-    private void logNfcConsole(String key, String value) {
-        consoleNfc.add(new NfcConsoleLine(key, value));
+    private void logNfcConsole(final String key, final String value) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                consoleNfc.add(new NfcConsoleLine(key, value));
+
+            }
+        });
     }
 
     // ===========================================================
@@ -263,7 +269,7 @@ public class NfcProxyFragment extends Fragment {
         @Override
         public void connected(String deviceName) {
             logNfcConsole("connected", deviceName);
-            mChatService.write("COucou".getBytes());
+            mChatService.write("Coucou".getBytes());
         }
 
         @Override

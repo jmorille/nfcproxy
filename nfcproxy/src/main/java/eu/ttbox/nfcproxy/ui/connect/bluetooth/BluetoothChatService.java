@@ -203,10 +203,11 @@ public class BluetoothChatService implements RemoteChatService {
 //        bundle.putString(BluetoothChat.DEVICE_NAME, device.getName());
 //        msg.setData(bundle);
 //        mHandler.sendMessage(msg);
+        setState(RemoteChatCallback.STATE_CONNECTED);
+
         if (mBluetoothChatCallback!=null) {
             mBluetoothChatCallback.connected(device.getName());
         }
-        setState(RemoteChatCallback.STATE_CONNECTED);
     }
 
     /**
