@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -100,14 +102,28 @@ public class NfcProxyFragment extends Fragment {
         mStatusField.setText(statusText);
     }
 
-    private void logNfcConsole(final String key, final String value) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                consoleNfc.add(new NfcConsoleLine(key, value));
-
+    private static final int UI_HANDLER_LOG_CONSOLE = 1;
+    private Handler uiHandler = new Handler(){
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case UI_HANDLER_LOG_CONSOLE:
+                    consoleNfc.add((NfcConsoleLine) msg.obj);
+                    break;
             }
-        });
+        }
+    };
+
+    private void logNfcConsole(final String key, final String value) {
+          uiHandler.obtainMessage(UI_HANDLER_LOG_CONSOLE, new NfcConsoleLine(key, value)).sendToTarget();
+
+//        getActivity().runOnUiThread(new Runnable() {
+//            @Override
+//            public void run() {
+//                consoleNfc.add(new NfcConsoleLine(key, value));
+//
+//            }
+//        });
     }
 
     // ===========================================================
@@ -269,7 +285,8 @@ public class NfcProxyFragment extends Fragment {
         @Override
         public void connected(String deviceName) {
             logNfcConsole("connected", deviceName);
-            mChatService.write("Coucou".getBytes());
+            String msg = "Coucou to "+ deviceName;
+            mChatService.write(msg.getBytes());
         }
 
         @Override
