@@ -222,17 +222,18 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
         String[][] nfctechfilter = new String[][]{new String[]{IsoDep.class.getName()}};
         // Broadcast
         nfcReceiver = new NfcReaderBroadcastReceiver(cardReaderCallback);
+        // Register Receiver Event
         IntentFilter nfcReceiverFilter = new IntentFilter();
         nfcReceiverFilter.addAction(NfcReaderBroadcastReceiver.ACTION_ON_NFC_RECEIVE);
         activity.registerReceiver(nfcReceiver, nfcReceiverFilter);
         // Nfc Receiver
         Intent intent = new Intent()
-                .setAction(NfcReaderBroadcastReceiver.ACTION_ON_NFC_RECEIVE)
+                .setAction(NfcReaderBroadcastReceiver.ACTION_ON_NFC_RECEIVE);
                 //.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
-                ;
-        PendingIntent nfcintent = PendingIntent.getBroadcast(activity, 0, intent, 0);
+
+        PendingIntent nfcIntent = PendingIntent.getBroadcast(activity, 0, intent, 0);
         // Enable
-        nfc.enableForegroundDispatch(activity, nfcintent, null, nfctechfilter);
+        nfc.enableForegroundDispatch(activity, nfcIntent, null, nfctechfilter);
         // Status
         mStatusField.setText("Ready to read Nfc Tag....");
 

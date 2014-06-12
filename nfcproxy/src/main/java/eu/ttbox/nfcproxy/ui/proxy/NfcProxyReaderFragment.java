@@ -6,6 +6,7 @@ import eu.ttbox.nfcproxy.ui.MainActivity;
 
 public class NfcProxyReaderFragment extends NfcProxyFragment {
 
+    private static final String TAG = "NfcProxyReaderFragment";
 
     // ===========================================================
     // Static
