@@ -49,7 +49,7 @@ public class NfcReaderBroadcastReceiver extends BroadcastReceiver {
         if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
             Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
             if (rawMsgs != null) {
-                NdefMessage[] msgs = new NdefMessage[rawMsgs.length];
+                msgs = new NdefMessage[rawMsgs.length];
                 for (int i = 0; i < rawMsgs.length; i++) {
                     msgs[i] = (NdefMessage) rawMsgs[i];
                 }

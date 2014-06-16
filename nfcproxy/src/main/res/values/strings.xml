@@ -4,7 +4,8 @@
     <string name="app_name">Nfc Proxy</string>
     <string name="title_section1">Lecteur NFC</string>
     <string name="title_section2">Replay NFC</string>
-    <string name="title_section3">Proxy NFC</string>
+    <string name="title_section3">Proxy Reader</string>
+    <string name="title_section4">Proxy Carte</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_example">Example action</string>

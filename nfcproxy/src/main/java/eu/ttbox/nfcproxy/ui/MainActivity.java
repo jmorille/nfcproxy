@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import eu.ttbox.nfcproxy.R;
+import eu.ttbox.nfcproxy.ui.proxy.NfcProxyCardFragment;
 import eu.ttbox.nfcproxy.ui.proxy.NfcProxyFragment;
+import eu.ttbox.nfcproxy.ui.proxy.NfcProxyReaderFragment;
 import eu.ttbox.nfcproxy.ui.readernfc.NfcReaderFragment;
 import eu.ttbox.nfcproxy.ui.connect.bluetooth.BluetoothScanFragment;
 import eu.ttbox.nfcproxy.ui.nav.NavigationDrawerFragment;
@@ -85,6 +87,9 @@ public class MainActivity extends Activity
             case 2:
                 toReplaceFragment= NfcProxyFragment.newInstance(position + 1);
                 break;
+            case 3:
+                toReplaceFragment= NfcProxyCardFragment.newInstance(position + 1);
+                break;
             default:
                 toReplaceFragment= PlaceholderFragment.newInstance(position + 1);
                 break;
@@ -107,6 +112,9 @@ public class MainActivity extends Activity
                 break;
             case 3:
                 mTitle = getString(R.string.title_section3);
+                break;
+            case 4:
+                mTitle = getString(R.string.title_section4);
                 break;
         }
     }
