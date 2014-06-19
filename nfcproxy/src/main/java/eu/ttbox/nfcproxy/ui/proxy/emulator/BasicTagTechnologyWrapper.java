@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 //TODO: HACK since BasicTagTechnology is not currently visible from SDK. primiarly want the transceive() method (otherwise we could just use TagTechnology)
 //TODO: Just access BasicTagTechnolgy directly but modifying platform library android.jar. (use library with hidden classes from framework.jar)
 
-public class BasicTagTechnologyWrapper  {
+public class BasicTagTechnologyWrapper {
 
 
     //	Method get;
@@ -34,65 +34,32 @@ public class BasicTagTechnologyWrapper  {
         mTag = tag;
     }
 
-   // @Override
+    // @Override
     public boolean isConnected() {
         Boolean ret = false;
         try {
             ret = (Boolean) isConnected.invoke(mTagTech);
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof RuntimeException) {
-                throw (RuntimeException) e.getTargetException();
-            }
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not isConnected Tag : " + e.getMessage());
         }
         return ret;
     }
 
-   // @Override
-    public void connect() throws IOException {
+    // @Override
+    public void connect() {
         try {
             connect.invoke(mTagTech);
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof RuntimeException) {
-                throw (RuntimeException) e.getTargetException();
-            }
-            else if (e.getTargetException() instanceof IOException) {
-                throw (IOException) e.getTargetException();
-            }
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not connect Tag : " + e.getMessage());
         }
     }
 
-   // @Override
+    // @Override
     public void close() throws IOException {
         try {
             close.invoke(mTagTech);
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof RuntimeException) {
-                throw (RuntimeException) e.getTargetException();
-            }
-            else if (e.getTargetException() instanceof IOException) {
-                throw (IOException) e.getTargetException();
-            }
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException("Could not close Tag : " + e.getMessage());
         }
     }
 
@@ -115,35 +82,20 @@ public class BasicTagTechnologyWrapper  {
         return 0;
     }
     */
-    public byte[] transceive(byte[] data) throws IOException {
+    public byte[] transceive(byte[] data) {
         try {
-            return (byte[])transceive.invoke(mTagTech, data);
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            if (e.getTargetException() instanceof RuntimeException) {
-                throw (RuntimeException) e.getTargetException();
-            }
-            else if (e.getTargetException() instanceof IOException) {
-                throw (IOException) e.getTargetException();
-            }
-            e.printStackTrace();
-            System.err.println(e);
-            System.err.println(e.getTargetException());
+            return (byte[]) transceive.invoke(mTagTech, data);
+        } catch (Exception e) {
+            throw new RuntimeException("Could not transceive Tag : " + e.getMessage());
         }
-        throw new IOException("transceive failed");
     }
 
-  //  @Override
+    //  @Override
     public Tag getTag() {
         return mTag;
     }
 /*
-	@Override
+    @Override
 	public void reconnect() throws IOException {
 		// TODO Auto-generated method stub
 
