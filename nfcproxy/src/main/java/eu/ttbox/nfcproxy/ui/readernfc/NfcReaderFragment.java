@@ -173,8 +173,8 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
 
     @Override
     public void onPause() {
-        super.onPause();
         disableReaderMode();
+        super.onPause();
     }
 
     @Override
@@ -236,8 +236,6 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
         nfc.enableForegroundDispatch(activity, nfcIntent, null, nfctechfilter);
         // Status
         mStatusField.setText("Ready to read Nfc Tag....");
-
-
     }
 
     // ===========================================================

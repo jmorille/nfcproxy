@@ -99,7 +99,7 @@ public class NfcProxyFragment extends Fragment {
     // Console Log
     // ===========================================================
 
-    public void setStatusField(final String statusText) {
+    public void logStatusField(final String statusText) {
         mStatusField.setText(statusText);
         mStatusField.post(new Runnable() {
             public void run() {
@@ -343,6 +343,22 @@ public class NfcProxyFragment extends Fragment {
         logNfcConsole("connectByAddress", address);
     }
 
+
+
+
+
+    // ===========================================================
+    // Dialog Service
+    // ===========================================================
+
+
+    protected void startNfcSettingsActivity() {
+        if (android.os.Build.VERSION.SDK_INT >= 16) {
+            startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
+        } else {
+            startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+        }
+    }
 
 
     // ===========================================================
