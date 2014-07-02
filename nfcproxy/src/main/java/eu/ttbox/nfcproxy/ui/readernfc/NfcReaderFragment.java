@@ -25,6 +25,7 @@ import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
 import eu.ttbox.nfcproxy.service.nfc.reader.LoyaltyCardReader;
 import eu.ttbox.nfcproxy.service.nfc.reader.emv41.EmvCardReader;
+import eu.ttbox.nfcproxy.service.nfc.reader.navigo.NavigoCardReader;
 import eu.ttbox.nfcproxy.ui.MainActivity;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
@@ -122,8 +123,8 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
 
 
         // Reader
-        mLoyaltyCardReader = new EmvCardReader(nfcConsoleCallback);
-//        mLoyaltyCardReader = new NavigoCardReader(nfcConsoleCallback);
+//        mLoyaltyCardReader = new EmvCardReader(nfcConsoleCallback);
+        mLoyaltyCardReader = new NavigoCardReader(nfcConsoleCallback);
         //
 
         // Disable Android Beam and register our card reader callback
