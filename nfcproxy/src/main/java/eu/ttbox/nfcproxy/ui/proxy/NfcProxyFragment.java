@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import eu.ttbox.nfcparser.utils.NumUtil;
 import eu.ttbox.nfcproxy.R;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.ui.MainActivity;
@@ -98,33 +99,33 @@ public class NfcProxyFragment extends Fragment {
     // Console Log
     // ===========================================================
 
-    private void setStatusField(String statusText) {
+    public void logStatusField(final String statusText) {
         mStatusField.setText(statusText);
-    }
-
-    private static final int UI_HANDLER_LOG_CONSOLE = 1;
-    private Handler uiHandler = new Handler(){
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case UI_HANDLER_LOG_CONSOLE:
-                    consoleNfc.add((NfcConsoleLine) msg.obj);
-                    break;
+        mStatusField.post(new Runnable() {
+            public void run() {
+                mStatusField.setText(statusText);
             }
-        }
-    };
-
-    private void logNfcConsole(final String key, final String value) {
-          uiHandler.obtainMessage(UI_HANDLER_LOG_CONSOLE, new NfcConsoleLine(key, value)).sendToTarget();
-
-//        getActivity().runOnUiThread(new Runnable() {
-//            @Override
-//            public void run() {
-//                consoleNfc.add(new NfcConsoleLine(key, value));
-//
-//            }
-//        });
+        });
     }
+
+    public void logNfcConsole(final String key, final byte[] value) {
+        String valueString = NumUtil.byte2HexNoSpace(value);
+        logNfcConsole(key, valueString);
+    }
+
+    public void logNfcConsole(final String key, final String value) {
+        Activity activity =getActivity();
+        if (activity==null) {
+            return;
+        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                consoleNfc.add(new NfcConsoleLine(key, value));
+            }
+        });
+    }
+
 
     // ===========================================================
     // Menu
@@ -286,7 +287,7 @@ public class NfcProxyFragment extends Fragment {
         public void connected(String deviceName) {
             logNfcConsole("connected", deviceName);
             String msg = "Coucou to "+ deviceName;
-            mChatService.write(msg.getBytes());
+            remoteWrite(msg.getBytes());
         }
 
         @Override
@@ -313,6 +314,15 @@ public class NfcProxyFragment extends Fragment {
 
 
     // ===========================================================
+    // Remote Api
+    // ===========================================================
+
+     public void remoteWrite(byte[] message) {
+         mChatService.write(message);
+     }
+
+
+    // ===========================================================
     // Bluetooth
     // ===========================================================
 
@@ -333,6 +343,22 @@ public class NfcProxyFragment extends Fragment {
         logNfcConsole("connectByAddress", address);
     }
 
+
+
+
+
+    // ===========================================================
+    // Dialog Service
+    // ===========================================================
+
+
+    protected void startNfcSettingsActivity() {
+        if (android.os.Build.VERSION.SDK_INT >= 16) {
+            startActivity(new Intent(android.provider.Settings.ACTION_NFC_SETTINGS));
+        } else {
+            startActivity(new Intent(android.provider.Settings.ACTION_WIRELESS_SETTINGS));
+        }
+    }
 
 
     // ===========================================================

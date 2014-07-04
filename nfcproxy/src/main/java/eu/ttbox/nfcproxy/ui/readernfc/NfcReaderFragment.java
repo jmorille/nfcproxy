@@ -25,6 +25,7 @@ import eu.ttbox.nfcproxy.service.nfc.NfcReaderBroadcastReceiver;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
 import eu.ttbox.nfcproxy.service.nfc.reader.LoyaltyCardReader;
 import eu.ttbox.nfcproxy.service.nfc.reader.emv41.EmvCardReader;
+import eu.ttbox.nfcproxy.service.nfc.reader.navigo.NavigoCardReader;
 import eu.ttbox.nfcproxy.ui.MainActivity;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleArrayAdapter;
 import eu.ttbox.nfcproxy.ui.readernfc.adapter.NfcConsoleLine;
@@ -122,8 +123,8 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
 
 
         // Reader
-        mLoyaltyCardReader = new EmvCardReader(nfcConsoleCallback);
-//        mLoyaltyCardReader = new NavigoCardReader(nfcConsoleCallback);
+//        mLoyaltyCardReader = new EmvCardReader(nfcConsoleCallback);
+        mLoyaltyCardReader = new NavigoCardReader(nfcConsoleCallback);
         //
 
         // Disable Android Beam and register our card reader callback
@@ -173,8 +174,8 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
 
     @Override
     public void onPause() {
-        super.onPause();
         disableReaderMode();
+        super.onPause();
     }
 
     @Override
@@ -236,8 +237,6 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
         nfc.enableForegroundDispatch(activity, nfcIntent, null, nfctechfilter);
         // Status
         mStatusField.setText("Ready to read Nfc Tag....");
-
-
     }
 
     // ===========================================================
@@ -273,20 +272,20 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
         public void onTagDiscovered(byte[] tagId) {
             String tagIdString = NumUtil.byte2HexNoSpace(tagId);
             mStatusField.setText("Tag Discovered : " + tagIdString);
-            consoleNfc.add(new NfcConsoleLine("Tag Discovered", tagIdString));
-        }
+            logNfcConsole("Tag Discovered", tagIdString);
+         }
 
         @Override
         public void onTagClose(byte[] tagId) {
             String tagIdString = NumUtil.byte2HexNoSpace(tagId);
-            mStatusField.setText("Tag Close : " + tagIdString);
-            consoleNfc.add(new NfcConsoleLine("Tag Close", tagIdString));
+            setStatusField("Tag Close : " + tagIdString);
+            logNfcConsole("Tag Close", tagIdString);
         }
 
 
         @Override
         public void onConsoleLog(String key, String value) {
-            consoleNfc.add(new NfcConsoleLine(key, value));
+            logNfcConsole(key, value);
         }
 
 
@@ -300,6 +299,37 @@ public class NfcReaderFragment extends Fragment implements LoyaltyCardReader.Acc
             @Override
             public void run() {
                 mStatusField.setText(account);
+            }
+        });
+    }
+
+    // ===========================================================
+    // Console Log
+    // ===========================================================
+
+    public void setStatusField(final String statusText) {
+        mStatusField.setText(statusText);
+        mStatusField.post(new Runnable() {
+            public void run() {
+                mStatusField.setText(statusText);
+            }
+        });
+    }
+
+    public void logNfcConsole(final String key, final byte[] value) {
+        String valueString = NumUtil.byte2HexNoSpace(value);
+        logNfcConsole(key, valueString);
+    }
+
+    public void logNfcConsole(final String key, final String value) {
+        Activity activity =getActivity();
+        if (activity==null) {
+            return;
+        }
+        activity.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                consoleNfc.add(new NfcConsoleLine(key, value));
             }
         });
     }
