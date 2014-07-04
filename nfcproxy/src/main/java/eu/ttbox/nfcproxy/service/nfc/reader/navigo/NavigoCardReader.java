@@ -24,6 +24,15 @@ import eu.ttbox.nfcparser.utils.NumUtil;
 import eu.ttbox.nfcproxy.service.nfc.NfcConsoleCallback;
 import eu.ttbox.nfcproxy.service.nfc.NfcReaderCallback;
 
+/**
+ * http://www.acbm.com/inedits/pass-transports-commun-secrets.html
+ * https://code.google.com/p/cardpeek/wiki/Navigo
+ * http://codebutler.com/announcing-farebot-for-android/
+ * http://www.journaldulapin.com/2013/02/10/lire-le-contenu-cache-dun-pass-navigo-sur-un-mac/
+ *  --> Code JS : https://github.com/elafargue/smart-tools/tree/master/atr/lib
+ *  --> https://github.com/elafargue/smart-tools/blob/master/atr/lib/calypso/intercode2.js
+ * Code Station : http://aurelienb.pagesperso-orange.fr/HTML/transports/obli_metro.htm
+ */
 public class NavigoCardReader implements NfcReaderCallback {
 
     private static final String TAG = "EmvCardReader";
@@ -79,6 +88,7 @@ public class NavigoCardReader implements NfcReaderCallback {
         selectMasterFile(isoDep);
         selectPseDirectoryNavigo(isoDep);
     }
+
 
     private void selectMasterFile(IsoDep isoDep) throws IOException {
         String title = "[Step 0] SELECT FILE Master File (if available)";
