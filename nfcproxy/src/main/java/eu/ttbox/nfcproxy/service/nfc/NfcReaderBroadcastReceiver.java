@@ -36,25 +36,35 @@ public class NfcReaderBroadcastReceiver extends BroadcastReceiver {
         Log.d(TAG, "Tag detected : " + NumUtil.byte2Hex(tagId));
 
         // Extra Intfo
-
+        byte[] extraId = intent.getByteArrayExtra(NfcAdapter.EXTRA_ID);	//optional
+        printNdefMessages(intent);
 
         // Discovery
         nfcReaderCallback.onTagDiscovered(tag);
     }
 
+    private void printNdefMessages(Intent intent) {
+        NdefMessage[] extraNdefMsg = extraNdefMessages(intent);
+        if (extraNdefMsg!=null) {
+            for (NdefMessage msg : extraNdefMsg) {
+                Log.d(TAG, " NdefMessages : " +  msg.toString());
+            }
+        }
+
+    }
 
     private NdefMessage[] extraNdefMessages(Intent intent) {
         String action = intent.getAction();
         NdefMessage[] msgs = null;
-        if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
-            Parcelable[] rawMsgs = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
-            if (rawMsgs != null) {
-                msgs = new NdefMessage[rawMsgs.length];
-                for (int i = 0; i < rawMsgs.length; i++) {
-                    msgs[i] = (NdefMessage) rawMsgs[i];
+      //  if (NfcAdapter.ACTION_NDEF_DISCOVERED.equals(action)) {
+            Parcelable[] extraNdefMsg = intent.getParcelableArrayExtra(NfcAdapter.EXTRA_NDEF_MESSAGES);
+            if (extraNdefMsg != null) {
+                msgs = new NdefMessage[extraNdefMsg.length];
+                for (int i = 0; i < extraNdefMsg.length; i++) {
+                    msgs[i] = (NdefMessage) extraNdefMsg[i];
                 }
             }
-        }
+       // }
         return msgs;
     }
 }
